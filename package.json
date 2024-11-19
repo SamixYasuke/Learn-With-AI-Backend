@@ -14,7 +14,7 @@
     "dev": "nodemon --watch src --ext ts --exec ts-node src/app.ts",
     "lint": "eslint . --ext .ts",
     "test": "jest",
-    "prepare": "husky install"
+    "prepare": "husky"
   },
   "author": "Adekolu Samuel",
   "license": "MIT",
