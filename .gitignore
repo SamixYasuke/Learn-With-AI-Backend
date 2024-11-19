@@ -1,0 +1,46 @@
+# Node modules
+node_modules/
+
+#
+build
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# TypeScript
+dist/
+*.tsbuildinfo
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Coverage reports
+coverage/
+
+# Build artifacts
+*.out
+*.pid
+
+# Dependency directories
+.bower_components/
+
+# Miscellaneous
+*.tgz
+*.bak
+*.tmp
