@@ -1,5 +1,10 @@
 import { Request, Response } from "express";
-import { createUserService, loginUserService } from "../services/user.service";
+import {
+  createUserService,
+  loginUserService,
+  requestOtpService,
+  verifyOtpAndChangePasswordService,
+} from "../services/user.service";
 import { asyncHandler } from "../utils/asyncHandler";
 import { IUser } from "../models/user.model";
 import { hashPassword } from "../utils/passwordHandler";
@@ -55,4 +60,41 @@ const loginUserController = asyncHandler(
   }
 );
 
-export { createUserController, loginUserController };
+const requestOtpController = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { email } = req.body;
+    if (!email) {
+      throw new CustomError("Email and password are required.", 400);
+    }
+    const otpResponse = await requestOtpService(email);
+    res.status(200).json({
+      status_code: 200,
+      message: otpResponse,
+    });
+  }
+);
+
+const verifyOtpAndChangePasswordController = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { email, otp, new_password } = req.body;
+    if (!email || !otp || !new_password) {
+      throw new CustomError("Email, OTP, and new password are required", 400);
+    }
+    const message = await verifyOtpAndChangePasswordService(
+      email,
+      otp,
+      new_password
+    );
+    return res.status(200).json({
+      status_code: 200,
+      message,
+    });
+  }
+);
+
+export {
+  createUserController,
+  loginUserController,
+  requestOtpController,
+  verifyOtpAndChangePasswordController,
+};

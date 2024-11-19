@@ -1,6 +1,8 @@
 import { CustomError } from "../errors/CustomError";
 import { User, IUser } from "../models/user.model";
-import { verifyPassword } from "../utils/passwordHandler";
+import { verifyPassword, hashPassword } from "../utils/passwordHandler";
+import { generateOtp } from "../utils/helper";
+import sendOTP from "../Emails/otp.email";
 
 const createUserService = async (userData: Partial<IUser>): Promise<IUser> => {
   const existingUser = await User.findOne({ email: userData.email });
@@ -27,4 +29,53 @@ const loginUserService = async (
   return user;
 };
 
-export { createUserService, loginUserService };
+const requestOtpService = async (email: string) => {
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw new CustomError("User doesn't exist", 404);
+  }
+  const otp = generateOtp();
+  const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
+  user.otp = otp;
+  user.otp_expires_at = expiresAt;
+  await user.save();
+
+  const userData = {
+    name: `${user.first_name} ${user.second_name}`,
+    otp,
+    email: user.email,
+  };
+  await sendOTP(userData);
+  return "OTP sent successfully";
+};
+
+const verifyOtpAndChangePasswordService = async (
+  email: string,
+  otp: string,
+  newPassword: string
+): Promise<string> => {
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw new CustomError("User not found", 404);
+  }
+  if (user.otp !== otp) {
+    throw new CustomError("Invalid OTP", 400);
+  }
+  const currentTime = new Date();
+  if (currentTime > user.otp_expires_at) {
+    throw new CustomError("OTP has expired", 400);
+  }
+  const hashedPassword = await hashPassword(newPassword);
+  user.password = hashedPassword;
+  user.otp = null;
+  user.otp_expires_at = null;
+  await user.save();
+  return "Password changed successfully";
+};
+
+export {
+  createUserService,
+  loginUserService,
+  requestOtpService,
+  verifyOtpAndChangePasswordService,
+};

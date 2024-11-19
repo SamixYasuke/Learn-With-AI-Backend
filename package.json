@@ -27,6 +27,7 @@
     "mongoose": "^8.8.2",
     "node-cron": "^3.0.3",
     "reflect-metadata": "^0.2.2",
+    "sib-api-v3-sdk": "^8.5.0",
     "supertest": "^7.0.0",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1"
