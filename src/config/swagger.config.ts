@@ -23,24 +23,6 @@ const swaggerDefinition = {
     },
   ],
   components: {
-    schemas: {
-      Squeeze: {
-        type: "object",
-        properties: {
-          id: { type: "string", format: "uuid" },
-          email: { type: "string", format: "email" },
-          first_name: { type: "string" },
-          last_name: { type: "string" },
-          phone: { type: "string" },
-          location: { type: "string" },
-          job_title: { type: "string" },
-          company: { type: "string" },
-          interests: { type: "string" },
-          referral_source: { type: "string" },
-        },
-        required: ["id", "email", "first_name", "last_name"],
-      },
-    },
     securitySchemes: {
       bearerAuth: {
         type: "http",

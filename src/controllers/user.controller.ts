@@ -8,6 +8,58 @@ import {
 import { asyncHandler } from "../utils/asyncHandler";
 import { CustomError } from "../errors/CustomError";
 
+/**
+ * @swagger
+ * /api/v1/users/register:
+ *   post:
+ *     summary: Create a new user
+ *     tags: [User]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               first_name:
+ *                 type: string
+ *               second_name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: User created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status_code:
+ *                   type: integer
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     user:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: string
+ *                         first_name:
+ *                           type: string
+ *                         second_name:
+ *                           type: string
+ *                         email:
+ *                           type: string
+ *                     token:
+ *                       type: string
+ *       400:
+ *         description: Bad request - Missing required fields
+ */
 const createUserController = asyncHandler(
   async (req: Request, res: Response) => {
     const { first_name, second_name, email, password } = req.body;
@@ -36,6 +88,54 @@ const createUserController = asyncHandler(
   }
 );
 
+/**
+ * @swagger
+ * /api/v1/users/login:
+ *   post:
+ *     summary: Log in a user
+ *     tags: [User]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status_code:
+ *                   type: integer
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     user:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: string
+ *                         first_name:
+ *                           type: string
+ *                         second_name:
+ *                           type: string
+ *                         email:
+ *                           type: string
+ *                     token:
+ *                       type: string
+ *       400:
+ *         description: Bad request - Missing email or password
+ */
 const loginUserController = asyncHandler(
   async (req: Request, res: Response) => {
     const { email, password } = req.body;
@@ -59,6 +159,36 @@ const loginUserController = asyncHandler(
   }
 );
 
+/**
+ * @swagger
+ * /api/v1/users/request-otp:
+ *   post:
+ *     summary: Request OTP for password reset
+ *     tags: [User]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: OTP sent to email
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status_code:
+ *                   type: integer
+ *                 message:
+ *                   type: string
+ *       400:
+ *         description: Bad request - Missing email
+ */
 const requestOtpController = asyncHandler(
   async (req: Request, res: Response) => {
     const { email } = req.body;
@@ -73,6 +203,40 @@ const requestOtpController = asyncHandler(
   }
 );
 
+/**
+ * @swagger
+ * /api/v1/users/verify-otp-and-change-password:
+ *   post:
+ *     summary: Verify OTP and change user password
+ *     tags: [User]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               otp:
+ *                 type: string
+ *               new_password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Password changed successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status_code:
+ *                   type: integer
+ *                 message:
+ *                   type: string
+ *       400:
+ *         description: Bad request - Missing required fields
+ */
 const verifyOtpAndChangePasswordController = asyncHandler(
   async (req: Request, res: Response) => {
     const { email, otp, new_password } = req.body;

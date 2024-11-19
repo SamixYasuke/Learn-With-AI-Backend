@@ -10,7 +10,7 @@ const router = Router();
 
 router.post("/register", createUserController);
 router.post("/login", loginUserController);
-router.post("/otp", requestOtpController);
+router.post("/request-otp", requestOtpController);
 router.post(
   "/verify-otp-and-change-password",
   verifyOtpAndChangePasswordController
