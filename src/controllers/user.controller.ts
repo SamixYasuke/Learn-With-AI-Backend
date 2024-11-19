@@ -6,8 +6,6 @@ import {
   verifyOtpAndChangePasswordService,
 } from "../services/user.service";
 import { asyncHandler } from "../utils/asyncHandler";
-import { IUser } from "../models/user.model";
-import { hashPassword } from "../utils/passwordHandler";
 import { CustomError } from "../errors/CustomError";
 
 const createUserController = asyncHandler(
@@ -16,23 +14,23 @@ const createUserController = asyncHandler(
     if (!first_name || !second_name || !email || !password) {
       throw new CustomError("All fields are required", 400);
     }
-    const hashed_password = await hashPassword(password);
-    const newUser: IUser = await createUserService({
+    const newUser = await createUserService({
       first_name,
       second_name,
       email,
-      password: hashed_password,
+      password,
     });
     res.status(201).json({
       status_code: 201,
       message: "User created successfully",
       data: {
         user: {
-          id: newUser._id,
-          first_name: newUser.first_name,
-          second_name: newUser.second_name,
-          email: newUser.email,
+          id: newUser.user._id,
+          first_name: newUser.user.first_name,
+          second_name: newUser.user.second_name,
+          email: newUser.user.email,
         },
+        token: newUser.token,
       },
     });
   }
@@ -44,17 +42,18 @@ const loginUserController = asyncHandler(
     if (!email || !password) {
       throw new CustomError("Email and password are required.", 400);
     }
-    const user: IUser = await loginUserService(email, password);
+    const loggedInUser = await loginUserService(email, password);
     res.status(200).json({
       status_code: 200,
       message: "Login successful.",
       data: {
         user: {
-          id: user._id,
-          first_name: user.first_name,
-          second_name: user.second_name,
-          email: user.email,
+          id: loggedInUser.user._id,
+          first_name: loggedInUser.user.first_name,
+          second_name: loggedInUser.user.second_name,
+          email: loggedInUser.user.email,
         },
+        token: loggedInUser.token,
       },
     });
   }

@@ -3,21 +3,34 @@ import { User, IUser } from "../models/user.model";
 import { verifyPassword, hashPassword } from "../utils/passwordHandler";
 import { generateOtp } from "../utils/helper";
 import sendOTP from "../Emails/otp.email";
+import { generateJwt } from "../utils/helper";
 
-const createUserService = async (userData: Partial<IUser>): Promise<IUser> => {
+export interface AuthResponse {
+  user: IUser;
+  token: string;
+}
+
+const createUserService = async (
+  userData: Partial<IUser>
+): Promise<AuthResponse> => {
   const existingUser = await User.findOne({ email: userData.email });
   if (existingUser) {
     throw new CustomError("Email already exists.", 403);
   }
-  const newUser = new User(userData);
+  const hashedPassword = await hashPassword(userData.password!);
+  const newUser = new User({ ...userData, password: hashedPassword });
   const savedUser = await newUser.save();
-  return savedUser;
+  const token = generateJwt({
+    id: savedUser._id,
+    email: savedUser.email,
+  });
+  return { user: savedUser, token };
 };
 
 const loginUserService = async (
   email: string,
   password: string
-): Promise<IUser> => {
+): Promise<AuthResponse> => {
   const user = await User.findOne({ email });
   if (!user) {
     throw new CustomError("Invalid email or password.", 400);
@@ -26,7 +39,11 @@ const loginUserService = async (
   if (!isPasswordValid) {
     throw new CustomError("Invalid email or password.", 400);
   }
-  return user;
+  const token = generateJwt({
+    id: user._id,
+    email: user.email,
+  });
+  return { user, token };
 };
 
 const requestOtpService = async (email: string) => {

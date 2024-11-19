@@ -6,7 +6,7 @@ export interface IUser extends Document {
   email: string;
   password: string;
   otp: string;
-  otp_expires_at: Date; // Added otp_expires_at field
+  otp_expires_at: Date;
 }
 
 const UserSchema: Schema = new Schema(
