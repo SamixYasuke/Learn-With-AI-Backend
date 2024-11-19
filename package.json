@@ -19,17 +19,17 @@
   "author": "Adekolu Samuel",
   "license": "MIT",
   "dependencies": {
+    "argon2": "^0.41.1",
     "axios": "^1.7.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
+    "mongoose": "^8.8.2",
     "node-cron": "^3.0.3",
-    "pg": "^8.13.1",
     "reflect-metadata": "^0.2.2",
     "supertest": "^7.0.0",
     "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^5.0.1",
-    "typeorm": "^0.3.20"
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "@types/axios": "^0.14.4",

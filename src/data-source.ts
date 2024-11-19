@@ -1,31 +1,20 @@
-// import "reflect-metadata";
-// import { DataSource } from "typeorm";
-// import { Squeeze } from "./models/sqeeze.model";
-// import dotenv from "dotenv";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+import { Application } from "express";
 
-// dotenv.config();
+dotenv.config();
 
-// export const AppDataSource = new DataSource({
-//   type: "postgres",
-//   host: process.env.DB_HOST,
-//   port: Number(process.env.DB_PORT),
-//   username: process.env.DB_USERNAME,
-//   password: process.env.DB_PASSWORD,
-//   database: process.env.DB_NAME,
-//   entities: [Squeeze],
-//   synchronize: true,
-//   logging: false,
-// });
+const initializeDatabaseAndServer = async (app: Application): Promise<void> => {
+  try {
+    await mongoose.connect(process.env.MONGODB_URI as string);
+    app.listen(process.env.PORT, () => {
+      console.log(`App is running on port ${process.env.PORT} `);
+      console.log(`Database has connected successfully`);
+    });
+  } catch (error) {
+    console.error(`Error connecting to the server: ${error}`);
+    process.exit(1);
+  }
+};
 
-// export async function initializeDataSource() {
-//   try {
-//     if (!AppDataSource.isInitialized) {
-//       await AppDataSource.initialize();
-//       console.log("Database connected successfully!");
-//     }
-//     return AppDataSource;
-//   } catch (error) {
-//     console.error("Database connection failed:", error);
-//     process.exit(1);
-//   }
-// }
+export default initializeDatabaseAndServer;
