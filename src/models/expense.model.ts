@@ -7,6 +7,8 @@ export interface IExpense extends Document {
   accumulated_amount: number;
   name: string;
   expense_percentage: number;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const ExpenseSchema: Schema = new Schema(

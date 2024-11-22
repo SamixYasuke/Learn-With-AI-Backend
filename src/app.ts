@@ -7,6 +7,7 @@ import categoryRoute from "./routes/category.route";
 import expenseRoute from "./routes/expense.route";
 import incomeRoute from "./routes/income.route";
 import goalRoute from "./routes/goal.route";
+import transactionRoute from "./routes/transaction.route";
 import { errorHandler } from "./errors/errorHandlers";
 
 const app = express();
@@ -18,6 +19,7 @@ app.use("/api/v1", categoryRoute);
 app.use("/api/v1", expenseRoute);
 app.use("/api/v1", incomeRoute);
 app.use("/api/v1", goalRoute);
+app.use("/api/v1", transactionRoute);
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 app.use(errorHandler);

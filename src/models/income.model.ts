@@ -7,6 +7,8 @@ export interface IIncome extends Document {
   required_amount: number;
   accumulated_amount: number;
   income_percentage: number;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const IncomeSchema: Schema = new Schema(
