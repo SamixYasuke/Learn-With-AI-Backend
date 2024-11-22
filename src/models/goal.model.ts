@@ -1,10 +1,11 @@
 import mongoose, { Schema, Document, Mongoose } from "mongoose";
 
 export interface IGoal extends Document {
+  name: Schema.Types.ObjectId;
   user_id: Schema.Types.ObjectId;
-  category_id: Schema.Types.ObjectId;
   required_amount: number;
   accumulated_amount: number;
+  goal_percentage: Number;
 }
 
 const GoalSchema: Schema = new Schema(
@@ -26,6 +27,10 @@ const GoalSchema: Schema = new Schema(
       type: Number,
       required: true,
       default: 0,
+    },
+    goal_percentage: {
+      type: Number,
+      required: false,
     },
   },
   {

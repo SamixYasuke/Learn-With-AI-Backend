@@ -4,8 +4,8 @@ import mongoose from "mongoose";
 
 interface GoalData {
   name: string;
-  required_amount: string;
-  accumulated_amount: string;
+  required_amount: number;
+  accumulated_amount: number;
   user_id: string;
 }
 
@@ -36,10 +36,25 @@ const getGoalByIdService = async (
   return goal;
 };
 
-const createGoalService = async (goalData: GoalData): Promise<IGoal> => {
+const createGoalService = async (goalData: any): Promise<IGoal> => {
+  const { accumulated_amount, required_amount } = goalData;
+  if (required_amount <= 0) {
+    throw new CustomError("Required amount must be greater than 0", 400);
+  }
+
+  if (accumulated_amount > required_amount) {
+    throw new CustomError(
+      "Accumulated amount cannot be greater than the required amount",
+      400
+    );
+  }
+
+  const goal_percentage = (accumulated_amount / required_amount) * 100;
+  goalData.goal_percentage = goal_percentage;
   const goal = new Goal(goalData);
-  const savedGoals = await goal.save();
-  return savedGoals;
+  const savedGoal = await goal.save();
+
+  return savedGoal;
 };
 
 const editGoalService = async (
@@ -55,6 +70,7 @@ const editGoalService = async (
   if (!goalData) {
     throw new CustomError("Goal data not found", 404);
   }
+
   if (user_id !== goalData.user_id.toString()) {
     throw new CustomError(
       "User doesn't have the right to update this goal",
@@ -62,9 +78,18 @@ const editGoalService = async (
     );
   }
 
+  if (accumulated_amount > goalData.required_amount) {
+    throw new CustomError(
+      "Accumulated amount cannot be greater than the required amount",
+      400
+    );
+  }
+
+  const goal_percentage = (accumulated_amount / goalData.required_amount) * 100;
   goalData.accumulated_amount = accumulated_amount;
+  goalData.goal_percentage = goal_percentage;
   await goalData.save();
-  return "Accumulated amount updated successfully";
+  return "Accumulated amount and goal percentage updated successfully";
 };
 
 export {
