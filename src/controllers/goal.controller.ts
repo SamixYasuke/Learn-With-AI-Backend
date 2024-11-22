@@ -3,6 +3,7 @@ import { asyncHandler } from "../utils/asyncHandler";
 import { CustomError } from "../errors/CustomError";
 import {
   getGoalsService,
+  getGoalByIdService,
   createGoalService,
   editGoalService,
 } from "../services/goal.service";
@@ -22,6 +23,19 @@ const getGoalsController = asyncHandler(
       status_code: 200,
       message: "Goals Fetched Successfully",
       data: goals,
+    });
+  }
+);
+
+const getGoalByIdController = asyncHandler(
+  async (req: AuthenticatedRequest, res: Response) => {
+    const user_id = req.user.id;
+    const { id } = req.params;
+    const goal = await getGoalByIdService(user_id, id);
+    res.status(200).json({
+      status_code: 200,
+      message: "Goals Fetched Successfully",
+      data: goal,
     });
   }
 );
@@ -68,4 +82,9 @@ const editGoalController = asyncHandler(
   }
 );
 
-export { getGoalsController, createGoalController, editGoalController };
+export {
+  getGoalsController,
+  getGoalByIdController,
+  createGoalController,
+  editGoalController,
+};

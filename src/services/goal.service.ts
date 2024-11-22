@@ -18,6 +18,24 @@ const getGoalsService = async (user_id: string): Promise<any[]> => {
   return goals;
 };
 
+const getGoalByIdService = async (
+  user_id: string,
+  goal_id: string
+): Promise<any> => {
+  if (
+    !mongoose.Types.ObjectId.isValid(user_id) ||
+    !mongoose.Types.ObjectId.isValid(goal_id)
+  ) {
+    throw new CustomError("Invalid user ID or goal ID", 400);
+  }
+  const goal = await Goal.findOne({ _id: goal_id, user_id: user_id });
+  if (!goal) {
+    throw new CustomError("Goal not found or does not belong to the user", 404);
+  }
+
+  return goal;
+};
+
 const createGoalService = async (goalData: GoalData): Promise<IGoal> => {
   const goal = new Goal(goalData);
   const savedGoals = await goal.save();
@@ -49,4 +67,9 @@ const editGoalService = async (
   return "Accumulated amount updated successfully";
 };
 
-export { getGoalsService, createGoalService, editGoalService };
+export {
+  getGoalsService,
+  getGoalByIdService,
+  createGoalService,
+  editGoalService,
+};
