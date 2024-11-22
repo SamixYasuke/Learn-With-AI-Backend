@@ -5,6 +5,8 @@ export interface IExpense extends Document {
   category_id: Schema.Types.ObjectId;
   required_amount: number;
   accumulated_amount: number;
+  name: string;
+  expense_percentage: number;
 }
 
 const ExpenseSchema: Schema = new Schema(
@@ -27,6 +29,14 @@ const ExpenseSchema: Schema = new Schema(
       type: Number,
       required: true,
       default: 0,
+    },
+    name: {
+      type: String,
+      required: true,
+    },
+    expense_percentage: {
+      type: Number,
+      required: false,
     },
   },
   {

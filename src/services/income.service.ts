@@ -3,9 +3,10 @@ import { CustomError } from "../errors/CustomError";
 import mongoose from "mongoose";
 
 interface incomeData {
+  name: string;
   category_id: string;
-  required_amount: string;
-  accumulated_amount: string;
+  required_amount: number;
+  accumulated_amount: number;
   user_id: string;
 }
 
@@ -23,9 +24,18 @@ const getIncomesService = async (user_id: string): Promise<any[]> => {
 const createIncomeService = async (
   incomeData: incomeData
 ): Promise<IIncome> => {
+  const { accumulated_amount, required_amount } = incomeData;
+  if (accumulated_amount > required_amount) {
+    throw new CustomError(
+      "Accumulated amount cannot be greater than the required amount",
+      400
+    );
+  }
+  const percentage = (accumulated_amount / required_amount) * 100;
   const income = new Income(incomeData);
-  const savedincome = await income.save();
-  return savedincome;
+  income.income_percentage = percentage;
+  const savedIncome = await income.save();
+  return savedIncome;
 };
 
 const editIncomeService = async (
@@ -36,10 +46,10 @@ const editIncomeService = async (
   if (!mongoose.Types.ObjectId.isValid(income_id)) {
     throw new CustomError("Invalid income ID", 400);
   }
-  const incomeData = await Income.findById(income_id);
 
+  const incomeData = await Income.findById(income_id);
   if (!incomeData) {
-    throw new CustomError("income data not found", 404);
+    throw new CustomError("Income data not found", 404);
   }
   if (user_id !== incomeData.user_id.toString()) {
     throw new CustomError(
@@ -48,7 +58,16 @@ const editIncomeService = async (
     );
   }
 
+  if (accumulated_amount > incomeData.required_amount) {
+    throw new CustomError(
+      "Accumulated amount cannot be greater than the required amount",
+      400
+    );
+  }
+
+  const percentage = (accumulated_amount / incomeData.required_amount) * 100;
   incomeData.accumulated_amount = accumulated_amount;
+  incomeData.income_percentage = percentage;
   await incomeData.save();
   return "Accumulated amount updated successfully";
 };

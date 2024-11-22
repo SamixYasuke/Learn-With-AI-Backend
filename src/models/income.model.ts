@@ -3,8 +3,10 @@ import mongoose, { Schema, Document } from "mongoose";
 export interface IIncome extends Document {
   user_id: Schema.Types.ObjectId;
   category_id: Schema.Types.ObjectId;
+  name: string;
   required_amount: number;
   accumulated_amount: number;
+  income_percentage: number;
 }
 
 const IncomeSchema: Schema = new Schema(
@@ -19,6 +21,10 @@ const IncomeSchema: Schema = new Schema(
       required: true,
       ref: "Category",
     },
+    name: {
+      type: String,
+      required: true,
+    },
     required_amount: {
       type: Number,
       required: true,
@@ -27,6 +33,10 @@ const IncomeSchema: Schema = new Schema(
       type: Number,
       required: true,
       default: 0,
+    },
+    income_percentage: {
+      type: Number,
+      required: false,
     },
   },
   {

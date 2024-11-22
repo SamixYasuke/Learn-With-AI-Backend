@@ -28,12 +28,13 @@ const getExpensesController = asyncHandler(
 
 const createExpenseController = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
-    const { category_id, required_amount, accumulated_amount } = req.body;
+    const { name, category_id, required_amount, accumulated_amount } = req.body;
     const user_id = req.user.id;
     if (!category_id || !required_amount || !accumulated_amount) {
       throw new CustomError("All fields are required!!", 400);
     }
     const expenseData = {
+      name,
       category_id,
       required_amount,
       accumulated_amount,
