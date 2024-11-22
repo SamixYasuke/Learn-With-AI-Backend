@@ -28,6 +28,10 @@ const UserSchema: Schema = new Schema(
       type: String,
       required: true,
     },
+    total_balance: {
+      type: Number,
+      required: false,
+    },
     otp: {
       type: String,
       required: false,
