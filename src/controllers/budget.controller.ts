@@ -123,7 +123,7 @@ const createBudgetController = asyncHandler(
  *     tags:
  *       - Budgets
  *     security:
- *       - BearerAuth: []
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Successfully retrieved budgets.
