@@ -6,6 +6,7 @@ import {
   createExpenseService,
   editExpenseService,
   categoriseExpensesService,
+  getMonthlyExpensesService,
 } from "../services/expense.service";
 
 export interface AuthenticatedRequest extends Request {
@@ -83,9 +84,22 @@ const categoriseExpensesController = asyncHandler(
   }
 );
 
+const getMonthlyExpensesController = asyncHandler(
+  async (req: AuthenticatedRequest, res: Response) => {
+    const user_id = req.user.id;
+    const monthlyExpenses = await getMonthlyExpensesService(user_id);
+    return res.status(200).json({
+      status_code: 200,
+      message: "Monthly Expenses Fetched Successfully",
+      data: monthlyExpenses,
+    });
+  }
+);
+
 export {
   getExpensesController,
   createExpenseController,
   editExpenseController,
   categoriseExpensesController,
+  getMonthlyExpensesController,
 };

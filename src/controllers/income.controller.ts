@@ -6,6 +6,7 @@ import {
   createIncomeService,
   editIncomeService,
   categoriseIncomesService,
+  getMonthlyIncomesService,
 } from "../services/income.service";
 
 export interface AuthenticatedRequest extends Request {
@@ -82,9 +83,22 @@ const categoriseIncomesController = asyncHandler(
   }
 );
 
+const getMonthlyIncomesController = asyncHandler(
+  async (req: AuthenticatedRequest, res: Response) => {
+    const user_id = req.user.id;
+    const monthlyIncomes = await getMonthlyIncomesService(user_id);
+    return res.status(200).json({
+      status_code: 200,
+      message: "Monthly Incomes Fetched Successfully",
+      data: monthlyIncomes,
+    });
+  }
+);
+
 export {
   getIncomesController,
   createIncomeController,
   editIncomeController,
   categoriseIncomesController,
+  getMonthlyIncomesController,
 };

@@ -90,28 +90,84 @@ const categoriseExpensesService = async (user_id: any): Promise<any> => {
     throw new CustomError("Invalid user ID", 400);
   }
 
-  const expenses = await Expense.find({ user_id }).populate("category_id");
-  const total_expenses = await getTotalExpenseForUserService(user_id);
-  const categorised = expenses.reduce((result: any, item: any) => {
-    const categoryName = item.category_id.category_name;
-    if (!result[categoryName]) {
-      result[categoryName] = [];
-    }
-    result[categoryName].push(item);
-    return result;
-  }, {});
+  const categorisedExpenses = await Expense.aggregate([
+    {
+      $match: { user_id: new mongoose.Types.ObjectId(user_id) },
+    },
+    {
+      $lookup: {
+        from: "categories",
+        localField: "category_id",
+        foreignField: "_id",
+        as: "category",
+      },
+    },
+    {
+      $unwind: "$category",
+    },
+    {
+      $group: {
+        _id: "$category.category_name",
+        total: { $sum: "$accumulated_amount" },
+      },
+    },
+    {
+      $sort: { total: -1 },
+    },
+  ]);
 
-  const totals = calculateCategoryTotals(categorised);
-  const percentages = calculateCategoryPercentage(totals, total_expenses);
+  const total_expenses = categorisedExpenses.reduce(
+    (sum, category) => sum + category.total,
+    0
+  );
 
-  const data = Object.entries(totals).map(([category, total]) => ({
-    category_name: category,
-    percentage: percentages[category],
-    total,
+  const data = categorisedExpenses.map((category) => ({
+    category_name: category._id,
+    total: category.total,
+    percentage: `${((category.total / total_expenses) * 100).toFixed(2)}%`,
     total_expenses,
   }));
 
   return data;
+};
+
+const getMonthlyExpensesService = async (user_id: any): Promise<any> => {
+  if (!mongoose.Types.ObjectId.isValid(user_id)) {
+    throw new Error("Invalid user ID");
+  }
+
+  const monthlyExpenses = await Expense.aggregate([
+    {
+      $match: { user_id: new mongoose.Types.ObjectId(user_id) },
+    },
+    {
+      $group: {
+        _id: {
+          year: { $year: "$createdAt" },
+          month: { $month: "$createdAt" },
+        },
+        amount_spent: { $sum: "$accumulated_amount" },
+      },
+    },
+    {
+      $sort: { "_id.year": 1, "_id.month": 1 },
+    },
+    {
+      $project: {
+        _id: 0,
+        date: {
+          $concat: [
+            { $toString: "$_id.year" },
+            "-",
+            { $toString: "$_id.month" },
+          ],
+        },
+        amount_spent: 1,
+      },
+    },
+  ]);
+
+  return monthlyExpenses;
 };
 
 export {
@@ -119,4 +175,5 @@ export {
   createExpenseService,
   editExpenseService,
   categoriseExpensesService,
+  getMonthlyExpensesService,
 };

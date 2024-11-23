@@ -106,9 +106,49 @@ const categoriseIncomesService = async (user_id: any): Promise<any> => {
   return data;
 };
 
+const getMonthlyIncomesService = async (user_id: any): Promise<any> => {
+  if (!mongoose.Types.ObjectId.isValid(user_id)) {
+    throw new Error("Invalid user ID");
+  }
+
+  const monthlyIncomes = await Income.aggregate([
+    {
+      $match: { user_id: new mongoose.Types.ObjectId(user_id) },
+    },
+    {
+      $group: {
+        _id: {
+          year: { $year: "$createdAt" },
+          month: { $month: "$createdAt" },
+        },
+        amount_spent: { $sum: "$accumulated_amount" },
+      },
+    },
+    {
+      $sort: { "_id.year": 1, "_id.month": 1 },
+    },
+    {
+      $project: {
+        _id: 0,
+        date: {
+          $concat: [
+            { $toString: "$_id.year" },
+            "-",
+            { $toString: "$_id.month" },
+          ],
+        },
+        amount_spent: 1,
+      },
+    },
+  ]);
+
+  return monthlyIncomes;
+};
+
 export {
   getIncomesService,
   createIncomeService,
   editIncomeService,
   categoriseIncomesService,
+  getMonthlyIncomesService,
 };

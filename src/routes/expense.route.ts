@@ -4,6 +4,7 @@ import {
   createExpenseController,
   editExpenseController,
   categoriseExpensesController,
+  getMonthlyExpensesController,
 } from "../controllers/expense.controller";
 import { authenticateJwt } from "../middlewares/authenticateJwt.middleware";
 
@@ -20,5 +21,7 @@ router.get(
   authenticateJwt,
   categoriseExpensesController
 );
+
+router.get("/expenses/monthly", authenticateJwt, getMonthlyExpensesController);
 
 export default router;
