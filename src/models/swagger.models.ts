@@ -204,6 +204,47 @@ const schemas = {
     },
     required: ["first_name", "second_name", "email", "password"],
   },
+  Budget: {
+    type: "object",
+    properties: {
+      budget_name: {
+        type: "string",
+        description: "The name of the budget.",
+      },
+      user_id: {
+        type: "string",
+        description: "The ID of the user associated with the budget.",
+        format: "uuid",
+      },
+      total_income: {
+        type: "number",
+        description: "The total income allocated for the budget.",
+      },
+      needs_budget: {
+        type: "number",
+        description: "The portion of the budget allocated for needs.",
+      },
+      wants_budget: {
+        type: "number",
+        description: "The portion of the budget allocated for wants.",
+      },
+      savings_budget: {
+        type: "number",
+        description: "The portion of the budget allocated for savings.",
+      },
+      createdAt: {
+        type: "string",
+        format: "date-time",
+        description: "Timestamp when the budget was created.",
+      },
+      updatedAt: {
+        type: "string",
+        format: "date-time",
+        description: "Timestamp when the budget was last updated.",
+      },
+    },
+    required: ["budget_name", "user_id", "total_income"],
+  },
 };
 
 export default schemas;

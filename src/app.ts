@@ -7,6 +7,7 @@ import expenseRoute from "./routes/expense.route";
 import incomeRoute from "./routes/income.route";
 import authRoute from "./routes/auth.route";
 import goalRoute from "./routes/goal.route";
+import budgetRoute from "./routes/budget.route";
 import transactionRoute from "./routes/transaction.route";
 import { errorHandler } from "./errors/errorHandlers";
 
@@ -20,6 +21,7 @@ app.use("/api/v1", expenseRoute);
 app.use("/api/v1", incomeRoute);
 app.use("/api/v1", goalRoute);
 app.use("/api/v1", transactionRoute);
+app.use("/api/v1", budgetRoute);
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 app.use(errorHandler);

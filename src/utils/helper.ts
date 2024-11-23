@@ -53,4 +53,27 @@ const verifyJwt = (token: string): JwtPayload | null => {
   }
 };
 
-export { generateOtp, generateJwt, verifyJwt };
+type SplitIncomeResult = {
+  needs: number;
+  wants: number;
+  savings: number;
+};
+
+/**
+ * Splits an income into 50% for needs, 30% for wants, and 20% for savings.
+ * @param income - The total income to split.
+ * @returns An object with the split values for needs, wants, and savings.
+ */
+const splitIncome = (income: number): SplitIncomeResult => {
+  if (income < 0) {
+    throw new Error("Income cannot be negative");
+  }
+
+  const needs = parseFloat((income * 0.5).toFixed(2));
+  const wants = parseFloat((income * 0.3).toFixed(2));
+  const savings = parseFloat((income * 0.2).toFixed(2));
+
+  return { needs, wants, savings };
+};
+
+export { generateOtp, generateJwt, verifyJwt, splitIncome };
