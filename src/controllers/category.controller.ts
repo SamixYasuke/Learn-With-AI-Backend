@@ -8,7 +8,7 @@ import {
 
 /**
  * @swagger
- * /api/v1/categories:
+ * /api/v1/category:
  *   post:
  *     summary: Create a new category
  *     description: Create a new category with a name and priority type.
@@ -28,7 +28,7 @@ import {
  *               priority_type:
  *                 type: string
  *                 description: The priority type of the category.
- *                 example: High
+ *                 example: want or need
  *     responses:
  *       201:
  *         description: Category created successfully.
