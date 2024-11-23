@@ -155,13 +155,7 @@ const getMonthlyExpensesService = async (user_id: any): Promise<any> => {
     {
       $project: {
         _id: 0,
-        date: {
-          $concat: [
-            { $toString: "$_id.year" },
-            "-",
-            { $toString: "$_id.month" },
-          ],
-        },
+        month: "$_id.month",
         amount_spent: 1,
       },
     },
