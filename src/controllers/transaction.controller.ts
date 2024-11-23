@@ -16,7 +16,7 @@ export interface AuthenticatedRequest extends Request {
 
 /**
  * @swagger
- * /transactions:
+ * /api/v1/transactions:
  *   get:
  *     summary: Get all transactions (expenses and incomes)
  *     description: Fetches all transactions (expenses and incomes) for the authenticated user with pagination.
@@ -96,7 +96,7 @@ const getAllTransactionsController = asyncHandler(
 
 /**
  * @swagger
- * /transactions/income:
+ * /api/v1/transactions/income:
  *   get:
  *     summary: Get total income
  *     description: Fetches the total income for the authenticated user.
@@ -139,7 +139,7 @@ const getTotalIncomeForUserController = asyncHandler(
 
 /**
  * @swagger
- * /transactions/expense:
+ * /api/v1/transactions/expense:
  *   get:
  *     summary: Get total expense
  *     description: Fetches the total expense for the authenticated user.
@@ -181,7 +181,7 @@ const getTotalExpenseForUserController = asyncHandler(
 
 /**
  * @swagger
- * /transactions/balance:
+ * /api/v1/transactions/balance:
  *   get:
  *     summary: Get account balance
  *     description: Fetches the account balance (total income - total expense) for the authenticated user.

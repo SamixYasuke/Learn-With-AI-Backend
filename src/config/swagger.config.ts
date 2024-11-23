@@ -1,5 +1,6 @@
 import swaggerJsdoc, { OAS3Definition } from "swagger-jsdoc";
 import dotenv from "dotenv";
+import schemas from "../models/swagger.models";
 
 dotenv.config();
 
@@ -11,15 +12,15 @@ const swaggerJsonUrl = isDevelopment
 const swaggerDefinition = {
   openapi: "3.1.0",
   info: {
-    title: "BoilerPlate Express API with Swagger",
+    title: "Finance Management API Docs",
     version: "1.0.0",
     description:
-      "This is a simple CRUD API application made with Express and documented with Swagger",
+      "This API provides functionalities for managing financial resources, including expenses, goals, incomes, and categories, built with Express and documented with Swagger.",
   },
   servers: [
     {
       url: swaggerJsonUrl,
-      description: "Local server",
+      description: isDevelopment ? "Local Server" : "Production Server",
     },
   ],
   components: {
@@ -30,6 +31,7 @@ const swaggerDefinition = {
         bearerFormat: "JWT",
       },
     },
+    schemas,
   },
   security: [
     {
