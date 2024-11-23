@@ -12,19 +12,19 @@ const router = express.Router();
 router.get("/transactions", authenticateJwt, getAllTransactionsController);
 
 router.get(
-  "/transactions/total-income",
+  "/transactions/income",
   authenticateJwt,
   getTotalIncomeForUserController
 );
 
 router.get(
-  "/transactions/total-expense",
+  "/transactions/expense",
   authenticateJwt,
   getTotalExpenseForUserController
 );
 
 router.get(
-  "/transaction/balance",
+  "/transactions/balance",
   authenticateJwt,
   getAccountBalanceController
 );

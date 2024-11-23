@@ -14,7 +14,7 @@ export interface AuthenticatedRequest extends Request {
 
 /**
  * @swagger
- * /api/v1/budgets:
+ * /api/v1/budget:
  *   post:
  *     summary: Create a new budget
  *     description: Allows an authenticated user to create a budget by specifying the budget name and total income. The income is split into needs, wants, and savings.
