@@ -9,6 +9,12 @@ import {
   getMonthlyExpensesService,
 } from "../services/expense.service";
 
+/**
+ * @swagger
+ * tags:
+ *   name: Expenses
+ *   description: Expense management APIs
+ */
 export interface AuthenticatedRequest extends Request {
   user?: {
     id: string;
@@ -16,6 +22,33 @@ export interface AuthenticatedRequest extends Request {
   };
 }
 
+/**
+ * @swagger
+ * /api/v1/expenses:
+ *   get:
+ *     summary: Get all expenses for the authenticated user
+ *     tags: [Expenses]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Successfully fetched expenses
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status_code:
+ *                   type: number
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Expense'
+ *       401:
+ *         description: Unauthorized access
+ */
 const getExpensesController = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
     const user_id = req.user.id;
@@ -28,6 +61,51 @@ const getExpensesController = asyncHandler(
   }
 );
 
+/**
+ * @swagger
+ * /api/v1/expenses:
+ *   post:
+ *     summary: Create a new expense
+ *     tags: [Expenses]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - category_id
+ *               - required_amount
+ *               - accumulated_amount
+ *             properties:
+ *               name:
+ *                 type: string
+ *               category_id:
+ *                 type: string
+ *               required_amount:
+ *                 type: number
+ *               accumulated_amount:
+ *                 type: number
+ *     responses:
+ *       201:
+ *         description: Expense created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status_code:
+ *                   type: number
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   $ref: '#/components/schemas/Expense'
+ *       400:
+ *         description: Invalid input data
+ */
 const createExpenseController = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
     const { name, category_id, required_amount, accumulated_amount } = req.body;
@@ -51,6 +129,51 @@ const createExpenseController = asyncHandler(
   }
 );
 
+/**
+ * @swagger
+ * /api/v1/expenses/{id}:
+ *   patch:
+ *     summary: Edit an existing expense
+ *     tags: [Expenses]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the expense to edit
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - accumulated_amount
+ *             properties:
+ *               accumulated_amount:
+ *                 type: number
+ *     responses:
+ *       200:
+ *         description: Successfully updated the expense
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status_code:
+ *                   type: number
+ *                 message:
+ *                   type: string
+ *       400:
+ *         description: Invalid input data
+ *       404:
+ *         description: Expense not found
+ *       403:
+ *         description: Unauthorized to edit this expense
+ */
 const editExpenseController = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
     const { id } = req.params;
@@ -71,6 +194,42 @@ const editExpenseController = asyncHandler(
   }
 );
 
+/**
+ * @swagger
+ * /api/v1/expenses/categories:
+ *   get:
+ *     summary: Get expenses grouped by categories
+ *     tags: [Expenses]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Successfully fetched categorised expenses
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status_code:
+ *                   type: number
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       category_name:
+ *                         type: string
+ *                       total:
+ *                         type: number
+ *                       percentage:
+ *                         type: string
+ *                       total_expenses:
+ *                         type: number
+ *       400:
+ *         description: Invalid user ID
+ */
 const categoriseExpensesController = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
     const user_id = req.user.id;
@@ -84,6 +243,52 @@ const categoriseExpensesController = asyncHandler(
   }
 );
 
+/**
+ * @swagger
+ * /api/v1/expenses/summary:
+ *   get:
+ *     summary: Get monthly expenses for the authenticated user
+ *     tags: [Expenses]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Successfully fetched monthly expenses
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status_code:
+ *                   type: number
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       year:
+ *                         type: number
+ *                       months:
+ *                         type: array
+ *                         items:
+ *                           type: object
+ *                           properties:
+ *                             month:
+ *                               type: number
+ *                             daily:
+ *                               type: array
+ *                               items:
+ *                                 type: object
+ *                                 properties:
+ *                                   day:
+ *                                     type: number
+ *                                   amount_spent:
+ *                                     type: number
+ *       400:
+ *         description: Invalid user ID
+ */
 const getMonthlyExpensesController = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
     const user_id = req.user.id;

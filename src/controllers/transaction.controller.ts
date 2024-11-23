@@ -14,6 +14,59 @@ export interface AuthenticatedRequest extends Request {
   };
 }
 
+/**
+ * @swagger
+ * /transactions:
+ *   get:
+ *     summary: Get all transactions (expenses and incomes)
+ *     description: Fetches all transactions (expenses and incomes) for the authenticated user with pagination.
+ *     tags:
+ *       - Transactions
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Page number for pagination.
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Number of items per page.
+ *     responses:
+ *       200:
+ *         description: Successfully fetched transactions.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status_code:
+ *                   type: integer
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     transactions:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                     totalItems:
+ *                       type: integer
+ *                     totalPages:
+ *                       type: integer
+ *                     currentPage:
+ *                       type: integer
+ *                     pageSize:
+ *                       type: integer
+ *       400:
+ *         description: Invalid pagination parameters.
+ */
 const getAllTransactionsController = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
     const { page = 1, limit = 10 } = req.query;
@@ -41,6 +94,36 @@ const getAllTransactionsController = asyncHandler(
   }
 );
 
+/**
+ * @swagger
+ * /transactions/income:
+ *   get:
+ *     summary: Get total income
+ *     description: Fetches the total income for the authenticated user.
+ *     tags:
+ *       - Transactions
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Successfully fetched total income.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status_code:
+ *                   type: integer
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     user_id:
+ *                       type: string
+ *                     totalIncome:
+ *                       type: number
+ */
 const getTotalIncomeForUserController = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
     const user_id = req.user.id;
@@ -54,6 +137,36 @@ const getTotalIncomeForUserController = asyncHandler(
   }
 );
 
+/**
+ * @swagger
+ * /transactions/expense:
+ *   get:
+ *     summary: Get total expense
+ *     description: Fetches the total expense for the authenticated user.
+ *     tags:
+ *       - Transactions
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Successfully fetched total expense.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status_code:
+ *                   type: integer
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     user_id:
+ *                       type: string
+ *                     totalExpense:
+ *                       type: number
+ */
 const getTotalExpenseForUserController = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
     const user_id = req.user.id;
@@ -66,6 +179,34 @@ const getTotalExpenseForUserController = asyncHandler(
   }
 );
 
+/**
+ * @swagger
+ * /transactions/balance:
+ *   get:
+ *     summary: Get account balance
+ *     description: Fetches the account balance (total income - total expense) for the authenticated user.
+ *     tags:
+ *       - Transactions
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Successfully fetched account balance.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status_code:
+ *                   type: integer
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     balance:
+ *                       type: number
+ */
 const getAccountBalanceController = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
     const user_id = req.user?.id;

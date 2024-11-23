@@ -4,13 +4,13 @@ import {
   loginUserService,
   requestOtpService,
   verifyOtpAndChangePasswordService,
-} from "../services/user.service";
+} from "../services/auth.service";
 import { asyncHandler } from "../utils/asyncHandler";
 import { CustomError } from "../errors/CustomError";
 
 /**
  * @swagger
- * /api/v1/users/register:
+ * /api/v1/auth/register:
  *   post:
  *     summary: Create a new user
  *     tags: [User]
@@ -90,7 +90,7 @@ const createUserController = asyncHandler(
 
 /**
  * @swagger
- * /api/v1/users/login:
+ * /api/v1/auth/login:
  *   post:
  *     summary: Log in a user
  *     tags: [User]
@@ -161,7 +161,7 @@ const loginUserController = asyncHandler(
 
 /**
  * @swagger
- * /api/v1/users/request-otp:
+ * /api/v1/auth/request-otp:
  *   post:
  *     summary: Request OTP for password reset
  *     tags: [User]
@@ -205,7 +205,7 @@ const requestOtpController = asyncHandler(
 
 /**
  * @swagger
- * /api/v1/users/verify-otp-and-change-password:
+ * /api/v1/auth/verify-otp-and-change-password:
  *   post:
  *     summary: Verify OTP and change user password
  *     tags: [User]

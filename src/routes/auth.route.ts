@@ -3,7 +3,7 @@ import {
   loginUserController,
   requestOtpController,
   verifyOtpAndChangePasswordController,
-} from "../controllers/user.controller";
+} from "../controllers/auth.controller";
 import { Router } from "express";
 
 const router = Router();
