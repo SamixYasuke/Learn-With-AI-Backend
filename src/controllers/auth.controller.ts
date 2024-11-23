@@ -13,7 +13,7 @@ import { CustomError } from "../errors/CustomError";
  * /api/v1/auth/register:
  *   post:
  *     summary: Create a new user
- *     tags: [User]
+ *     tags: [Auth]
  *     requestBody:
  *       required: true
  *       content:
@@ -92,8 +92,10 @@ const createUserController = asyncHandler(
  * @swagger
  * /api/v1/auth/login:
  *   post:
- *     summary: Log in a user
- *     tags: [User]
+ *     summary: User Login
+ *     tags:
+ *       - Auth
+ *     description: Authenticates a user with their email and password, returning a token and user details.
  *     requestBody:
  *       required: true
  *       content:
@@ -103,11 +105,21 @@ const createUserController = asyncHandler(
  *             properties:
  *               email:
  *                 type: string
+ *                 format: email
+ *                 description: The email address of the user.
  *               password:
  *                 type: string
+ *                 format: password
+ *                 description: The password of the user.
+ *             required:
+ *               - email
+ *               - password
+ *           example:
+ *             email: "user@example.com"
+ *             password: "password123"
  *     responses:
  *       200:
- *         description: Login successful
+ *         description: Successful login
  *         content:
  *           application/json:
  *             schema:
@@ -115,8 +127,10 @@ const createUserController = asyncHandler(
  *               properties:
  *                 status_code:
  *                   type: integer
+ *                   example: 200
  *                 message:
  *                   type: string
+ *                   example: Login successful.
  *                 data:
  *                   type: object
  *                   properties:
@@ -125,16 +139,35 @@ const createUserController = asyncHandler(
  *                       properties:
  *                         id:
  *                           type: string
+ *                           format: uuid
+ *                           description: The unique identifier of the user.
  *                         first_name:
  *                           type: string
+ *                           description: The first name of the user.
  *                         second_name:
  *                           type: string
+ *                           description: The second name of the user.
  *                         email:
  *                           type: string
+ *                           format: email
+ *                           description: The email address of the user.
  *                     token:
  *                       type: string
- *       400:
- *         description: Bad request - Missing email or password
+ *                       description: JWT token for authenticated requests.
+ *                     balance:
+ *                       type: number
+ *                       description: The user's account balance.
+ *             example:
+ *               status_code: 200
+ *               message: Login successful.
+ *               data:
+ *                 user:
+ *                   id: "64a7bf2e47d3f2b1c6c9d8c3"
+ *                   first_name: "John"
+ *                   second_name: "Doe"
+ *                   email: "user@example.com"
+ *                 token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+ *                 balance: 1000.00
  */
 const loginUserController = asyncHandler(
   async (req: Request, res: Response) => {
@@ -154,6 +187,7 @@ const loginUserController = asyncHandler(
           email: loggedInUser.user.email,
         },
         token: loggedInUser.token,
+        balance: loggedInUser.balance,
       },
     });
   }
@@ -164,7 +198,7 @@ const loginUserController = asyncHandler(
  * /api/v1/auth/request-otp:
  *   post:
  *     summary: Request OTP for password reset
- *     tags: [User]
+ *     tags: [Auth]
  *     requestBody:
  *       required: true
  *       content:
@@ -208,7 +242,7 @@ const requestOtpController = asyncHandler(
  * /api/v1/auth/verify-otp-and-change-password:
  *   post:
  *     summary: Verify OTP and change user password
- *     tags: [User]
+ *     tags: [Auth]
  *     requestBody:
  *       required: true
  *       content:

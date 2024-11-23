@@ -4,10 +4,12 @@ import { verifyPassword, hashPassword } from "../utils/passwordHandler";
 import { generateOtp } from "../utils/helper";
 import sendOTP from "../Emails/otp.email";
 import { generateJwt } from "../utils/helper";
+import { getAccountBalanceForUserService } from "./transaction.service";
 
 export interface AuthResponse {
   user: IUser;
   token: string;
+  balance?: string | number;
 }
 
 const createUserService = async (
@@ -43,7 +45,8 @@ const loginUserService = async (
     id: user._id,
     email: user.email,
   });
-  return { user, token };
+  const balance = await getAccountBalanceForUserService(user?.id);
+  return { user, token, balance };
 };
 
 const requestOtpService = async (email: string) => {
