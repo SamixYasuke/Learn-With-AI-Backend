@@ -10,10 +10,13 @@ import goalRoute from "./routes/goal.route";
 import budgetRoute from "./routes/budget.route";
 import transactionRoute from "./routes/transaction.route";
 import { errorHandler } from "./errors/errorHandlers";
+import sendPingRequest from "./utils/sendPingRequest";
+import cron from "node-cron";
 
 const app = express();
 
 app.use(express.json());
+cron.schedule("*/2 * * * *", sendPingRequest);
 
 app.use("/api/v1/auth", authRoute);
 app.use("/api/v1", categoryRoute);
