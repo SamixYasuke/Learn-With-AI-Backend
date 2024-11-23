@@ -18,6 +18,6 @@ router.patch("/incomes/:id", authenticateJwt, editIncomeController);
 
 router.get("/incomes/categories", authenticateJwt, categoriseIncomesController);
 
-router.get("/incomes/monthly", authenticateJwt, getMonthlyIncomesController);
+router.get("/incomes/summary", authenticateJwt, getMonthlyIncomesController);
 
 export default router;

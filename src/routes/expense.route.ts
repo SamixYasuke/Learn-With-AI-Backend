@@ -22,6 +22,6 @@ router.get(
   categoriseExpensesController
 );
 
-router.get("/expenses/monthly", authenticateJwt, getMonthlyExpensesController);
+router.get("/expenses/summary", authenticateJwt, getMonthlyExpensesController);
 
 export default router;

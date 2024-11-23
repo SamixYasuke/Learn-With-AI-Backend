@@ -80,7 +80,7 @@ const editExpenseService = async (
   return "Accumulated amount and percentage updated successfully";
 };
 
-const categoriseExpensesService = async (user_id: any): Promise<any> => {
+const categoriseExpensesService = async (user_id: string): Promise<any> => {
   if (!mongoose.Types.ObjectId.isValid(user_id)) {
     throw new CustomError("Invalid user ID", 400);
   }
@@ -126,12 +126,12 @@ const categoriseExpensesService = async (user_id: any): Promise<any> => {
   return data;
 };
 
-const getMonthlyExpensesService = async (user_id: any): Promise<any> => {
+const getMonthlyExpensesService = async (user_id: string): Promise<any> => {
   if (!mongoose.Types.ObjectId.isValid(user_id)) {
     throw new Error("Invalid user ID");
   }
 
-  const monthlyExpenses = await Expense.aggregate([
+  const dailyExpenses = await Expense.aggregate([
     {
       $match: { user_id: new mongoose.Types.ObjectId(user_id) },
     },
@@ -140,23 +140,49 @@ const getMonthlyExpensesService = async (user_id: any): Promise<any> => {
         _id: {
           year: { $year: "$createdAt" },
           month: { $month: "$createdAt" },
+          day: { $dayOfMonth: "$createdAt" },
         },
         amount_spent: { $sum: "$accumulated_amount" },
       },
     },
     {
-      $sort: { "_id.year": 1, "_id.month": 1 },
+      $sort: { "_id.year": 1, "_id.month": 1, "_id.day": 1 },
+    },
+    {
+      $group: {
+        _id: {
+          year: "$_id.year",
+          month: "$_id.month",
+        },
+        daily: {
+          $push: {
+            day: "$_id.day",
+            amount_spent: "$amount_spent",
+          },
+        },
+      },
+    },
+    {
+      $group: {
+        _id: "$_id.year",
+        months: {
+          $push: {
+            month: "$_id.month",
+            daily: "$daily",
+          },
+        },
+      },
     },
     {
       $project: {
         _id: 0,
-        month: "$_id.month",
-        amount_spent: 1,
+        year: "$_id",
+        months: 1,
       },
     },
   ]);
 
-  return monthlyExpenses;
+  return dailyExpenses;
 };
 
 export {
