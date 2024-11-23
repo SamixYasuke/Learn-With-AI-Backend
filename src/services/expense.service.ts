@@ -1,11 +1,6 @@
 import { Expense, IExpense } from "../models/expense.model";
 import { CustomError } from "../errors/CustomError";
 import mongoose from "mongoose";
-import { getTotalExpenseForUserService } from "./transaction.service";
-import {
-  calculateCategoryPercentage,
-  calculateCategoryTotals,
-} from "../utils/helper";
 
 interface ExpenseData {
   name: string;

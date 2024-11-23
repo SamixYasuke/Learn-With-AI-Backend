@@ -1,11 +1,6 @@
 import { Income, IIncome } from "../models/income.model";
 import { CustomError } from "../errors/CustomError";
 import mongoose from "mongoose";
-import { getTotalIncomeForUserService } from "./transaction.service";
-import {
-  calculateCategoryPercentage,
-  calculateCategoryTotals,
-} from "../utils/helper";
 
 interface incomeData {
   name: string;
