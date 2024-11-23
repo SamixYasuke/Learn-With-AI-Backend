@@ -1,6 +1,11 @@
 import { Income, IIncome } from "../models/income.model";
 import { CustomError } from "../errors/CustomError";
 import mongoose from "mongoose";
+import { getTotalIncomeForUserService } from "./transaction.service";
+import {
+  calculateCategoryPercentage,
+  calculateCategoryTotals,
+} from "../utils/helper";
 
 interface incomeData {
   name: string;
@@ -72,4 +77,38 @@ const editIncomeService = async (
   return "Accumulated amount updated successfully";
 };
 
-export { getIncomesService, createIncomeService, editIncomeService };
+const categoriseIncomesService = async (user_id: any): Promise<any> => {
+  if (!mongoose.Types.ObjectId.isValid(user_id)) {
+    throw new CustomError("Invalid user ID", 400);
+  }
+
+  const incomes = await Income.find({ user_id }).populate("category_id");
+  const total_incomes = await getTotalIncomeForUserService(user_id);
+  const categorised = incomes.reduce((result: any, item: any) => {
+    const categoryName = item.category_id.category_name;
+    if (!result[categoryName]) {
+      result[categoryName] = [];
+    }
+    result[categoryName].push(item);
+    return result;
+  }, {});
+
+  const totals = calculateCategoryTotals(categorised);
+  const percentages = calculateCategoryPercentage(totals, total_incomes);
+
+  const data = Object.entries(totals).map(([category, total]) => ({
+    category_name: category,
+    percentage: percentages[category],
+    total,
+    total_incomes,
+  }));
+
+  return data;
+};
+
+export {
+  getIncomesService,
+  createIncomeService,
+  editIncomeService,
+  categoriseIncomesService,
+};

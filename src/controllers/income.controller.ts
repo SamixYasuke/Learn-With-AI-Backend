@@ -5,6 +5,7 @@ import {
   getIncomesService,
   createIncomeService,
   editIncomeService,
+  categoriseIncomesService,
 } from "../services/income.service";
 
 export interface AuthenticatedRequest extends Request {
@@ -69,4 +70,21 @@ const editIncomeController = asyncHandler(
   }
 );
 
-export { getIncomesController, createIncomeController, editIncomeController };
+const categoriseIncomesController = asyncHandler(
+  async (req: AuthenticatedRequest, res: Response) => {
+    const user_id = req.user.id;
+    const incomesCategory = await categoriseIncomesService(user_id);
+    res.status(200).json({
+      status_code: 200,
+      message: "Income Categories Fetched Successfully",
+      data: incomesCategory,
+    });
+  }
+);
+
+export {
+  getIncomesController,
+  createIncomeController,
+  editIncomeController,
+  categoriseIncomesController,
+};

@@ -53,4 +53,33 @@ const verifyJwt = (token: string): JwtPayload | null => {
   }
 };
 
-export { generateOtp, generateJwt, verifyJwt };
+const calculateCategoryTotals = (categorised: Record<string, any[]>) => {
+  const totals: Record<string, number> = {};
+  for (const [category, expenses] of Object.entries(categorised)) {
+    totals[category] = expenses.reduce(
+      (sum, expense) => sum + expense.accumulated_amount,
+      0
+    );
+  }
+  return totals;
+};
+
+const calculateCategoryPercentage = (
+  totals: Record<string, number>,
+  totalAmount: number
+) => {
+  const percentages: Record<string, string> = {};
+  for (const [category, total] of Object.entries(totals)) {
+    const percentage = (total / totalAmount) * 100;
+    percentages[category] = `${percentage.toFixed(2)}%`;
+  }
+  return percentages;
+};
+
+export {
+  generateOtp,
+  generateJwt,
+  verifyJwt,
+  calculateCategoryTotals,
+  calculateCategoryPercentage,
+};

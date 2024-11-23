@@ -1,6 +1,11 @@
 import { Expense, IExpense } from "../models/expense.model";
 import { CustomError } from "../errors/CustomError";
 import mongoose from "mongoose";
+import { getTotalExpenseForUserService } from "./transaction.service";
+import {
+  calculateCategoryPercentage,
+  calculateCategoryTotals,
+} from "../utils/helper";
 
 interface ExpenseData {
   name: string;
@@ -80,4 +85,38 @@ const editExpenseService = async (
   return "Accumulated amount and percentage updated successfully";
 };
 
-export { getExpensesService, createExpenseService, editExpenseService };
+const categoriseExpensesService = async (user_id: any): Promise<any> => {
+  if (!mongoose.Types.ObjectId.isValid(user_id)) {
+    throw new CustomError("Invalid user ID", 400);
+  }
+
+  const expenses = await Expense.find({ user_id }).populate("category_id");
+  const total_expenses = await getTotalExpenseForUserService(user_id);
+  const categorised = expenses.reduce((result: any, item: any) => {
+    const categoryName = item.category_id.category_name;
+    if (!result[categoryName]) {
+      result[categoryName] = [];
+    }
+    result[categoryName].push(item);
+    return result;
+  }, {});
+
+  const totals = calculateCategoryTotals(categorised);
+  const percentages = calculateCategoryPercentage(totals, total_expenses);
+
+  const data = Object.entries(totals).map(([category, total]) => ({
+    category_name: category,
+    percentage: percentages[category],
+    total,
+    total_expenses,
+  }));
+
+  return data;
+};
+
+export {
+  getExpensesService,
+  createExpenseService,
+  editExpenseService,
+  categoriseExpensesService,
+};
