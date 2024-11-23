@@ -82,24 +82,41 @@ const categoriseIncomesService = async (user_id: any): Promise<any> => {
     throw new CustomError("Invalid user ID", 400);
   }
 
-  const incomes = await Income.find({ user_id }).populate("category_id");
-  const total_incomes = await getTotalIncomeForUserService(user_id);
-  const categorised = incomes.reduce((result: any, item: any) => {
-    const categoryName = item.category_id.category_name;
-    if (!result[categoryName]) {
-      result[categoryName] = [];
-    }
-    result[categoryName].push(item);
-    return result;
-  }, {});
+  const categorisedIncomes = await Income.aggregate([
+    {
+      $match: { user_id: new mongoose.Types.ObjectId(user_id) },
+    },
+    {
+      $lookup: {
+        from: "categories",
+        localField: "category_id",
+        foreignField: "_id",
+        as: "category",
+      },
+    },
+    {
+      $unwind: "$category",
+    },
+    {
+      $group: {
+        _id: "$category.category_name",
+        total: { $sum: "$accumulated_amount" },
+      },
+    },
+    {
+      $sort: { total: -1 },
+    },
+  ]);
 
-  const totals = calculateCategoryTotals(categorised);
-  const percentages = calculateCategoryPercentage(totals, total_incomes);
+  const total_incomes = categorisedIncomes.reduce(
+    (sum, category) => sum + category.total,
+    0
+  );
 
-  const data = Object.entries(totals).map(([category, total]) => ({
-    category_name: category,
-    percentage: percentages[category],
-    total,
+  const data = categorisedIncomes.map((category) => ({
+    category_name: category._id,
+    total: category.total,
+    percentage: `${((category.total / total_incomes) * 100).toFixed(2)}%`,
     total_incomes,
   }));
 
