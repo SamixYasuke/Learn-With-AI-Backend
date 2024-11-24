@@ -27,14 +27,6 @@ export interface AuthenticatedRequest extends Request {
  *     description: Fetches all transactions of a user sorted by the most recent. The user ID is obtained from the authentication token.
  *     tags:
  *       - Transactions
- *     parameters:
- *       - in: header
- *         name: Authorization
- *         required: true
- *         schema:
- *           type: string
- *           example: Bearer <your-token>
- *         description: The JWT token for authentication.
  *     responses:
  *       200:
  *         description: Transactions fetched successfully
@@ -780,15 +772,15 @@ const getIncomeSummaryController = asyncHandler(
 
 /**
  * @swagger
- * /api/v1/transactions/income/summary:
+ * /api/v1/transactions/expense/summary:
  *   get:
- *     summary: Get income summary for a user
- *     description: Retrieves the income summary for a user, grouped by year and month. The summary includes daily income amounts and overall monthly and yearly income.
+ *     summary: Get expense summary for a user
+ *     description: Retrieves the expense summary for a user, grouped by year and month. The summary includes daily expense amounts and overall monthly and yearly expenses.
  *     tags:
  *       - Transactions
  *     responses:
  *       200:
- *         description: Income summary fetched successfully
+ *         description: Expense summary fetched successfully
  *         content:
  *           application/json:
  *             schema:
@@ -799,18 +791,18 @@ const getIncomeSummaryController = asyncHandler(
  *                   example: 200
  *                 message:
  *                   type: string
- *                   example: Income Summary fetched successfully
+ *                   example: Expense Summary fetched successfully
  *                 data:
  *                   type: object
  *                   properties:
- *                     income_summary:
+ *                     expense_summary:
  *                       type: array
  *                       items:
  *                         type: object
  *                         properties:
  *                           year:
  *                             type: integer
- *                             description: The year of the income summary.
+ *                             description: The year of the expense summary.
  *                             example: 2023
  *                           months:
  *                             type: array
@@ -819,7 +811,7 @@ const getIncomeSummaryController = asyncHandler(
  *                               properties:
  *                                 month:
  *                                   type: integer
- *                                   description: The month of the income summary (1-12).
+ *                                   description: The month of the expense summary (1-12).
  *                                   example: 5
  *                                 daily:
  *                                   type: array
@@ -832,7 +824,7 @@ const getIncomeSummaryController = asyncHandler(
  *                                         example: 15
  *                                       amount_spent:
  *                                         type: number
- *                                         description: The amount of income on that specific day.
+ *                                         description: The amount of expense on that specific day.
  *                                         example: 100
  *       400:
  *         description: Invalid user ID
@@ -864,11 +856,10 @@ const getIncomeSummaryController = asyncHandler(
 const getExpenseSummaryController = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
     const user_id = req?.user?.id;
-
     const expense_summary = await getExpenseSummaryService(user_id);
     return res.status(200).json({
       status_code: 200,
-      message: "Income Summary fetched successfully",
+      message: "Expense Summary fetched successfully",
       data: {
         expense_summary,
       },

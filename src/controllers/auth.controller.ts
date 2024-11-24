@@ -57,6 +57,9 @@ import { CustomError } from "../errors/CustomError";
  *                           type: string
  *                     token:
  *                       type: string
+ *                     balance:
+ *                       type: number
+ *                       description: The user's account balance.
  *       400:
  *         description: Bad request - Missing required fields
  */
