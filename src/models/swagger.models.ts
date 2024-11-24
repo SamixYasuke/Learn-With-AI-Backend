@@ -24,55 +24,6 @@ const schemas = {
     },
     required: ["category_name", "priority_type"],
   },
-  Expense: {
-    type: "object",
-    properties: {
-      user_id: {
-        type: "string",
-        description: "The ID of the user associated with the expense.",
-        format: "uuid",
-      },
-      category_id: {
-        type: "string",
-        description: "The ID of the category the expense belongs to.",
-        format: "uuid",
-      },
-      required_amount: {
-        type: "number",
-        description: "The total required amount for the expense.",
-      },
-      accumulated_amount: {
-        type: "number",
-        description: "The accumulated amount paid towards the expense.",
-      },
-      name: {
-        type: "string",
-        description: "The name or description of the expense.",
-      },
-      expense_percentage: {
-        type: "number",
-        description:
-          "The percentage of the required amount that has been paid.",
-      },
-      createdAt: {
-        type: "string",
-        format: "date-time",
-        description: "Timestamp when the expense was created.",
-      },
-      updatedAt: {
-        type: "string",
-        format: "date-time",
-        description: "Timestamp when the expense was last updated.",
-      },
-    },
-    required: [
-      "user_id",
-      "category_id",
-      "required_amount",
-      "accumulated_amount",
-      "name",
-    ],
-  },
   Goal: {
     type: "object",
     properties: {
@@ -109,54 +60,6 @@ const schemas = {
       },
     },
     required: ["user_id", "name", "required_amount", "accumulated_amount"],
-  },
-  Income: {
-    type: "object",
-    properties: {
-      user_id: {
-        type: "string",
-        description: "The ID of the user associated with the income.",
-        format: "uuid",
-      },
-      category_id: {
-        type: "string",
-        description: "The ID of the category associated with the income.",
-        format: "uuid",
-      },
-      name: {
-        type: "string",
-        description: "The name or description of the income source.",
-      },
-      required_amount: {
-        type: "number",
-        description: "The total required amount to achieve the income goal.",
-      },
-      accumulated_amount: {
-        type: "number",
-        description: "The accumulated amount towards the income goal.",
-      },
-      income_percentage: {
-        type: "number",
-        description: "The percentage of the income goal achieved.",
-      },
-      createdAt: {
-        type: "string",
-        format: "date-time",
-        description: "Timestamp when the income was created.",
-      },
-      updatedAt: {
-        type: "string",
-        format: "date-time",
-        description: "Timestamp when the income was last updated.",
-      },
-    },
-    required: [
-      "user_id",
-      "category_id",
-      "name",
-      "required_amount",
-      "accumulated_amount",
-    ],
   },
   User: {
     type: "object",
@@ -244,6 +147,50 @@ const schemas = {
       },
     },
     required: ["budget_name", "user_id", "total_income"],
+  },
+  Transaction: {
+    type: "object",
+    properties: {
+      user_id: {
+        type: "string",
+        description: "The ID of the user associated with the transaction.",
+        format: "uuid",
+      },
+      name: {
+        type: "string",
+        description: "The name of the transaction.",
+      },
+      amount: {
+        type: "string",
+        description: "The amount involved in the transaction.",
+      },
+      type: {
+        type: "string",
+        description: "The type of transaction.",
+        enum: ["expense", "income"],
+      },
+      category: {
+        type: "string",
+        description: "The ID of the category associated with the transaction.",
+        format: "uuid",
+      },
+      percentage: {
+        type: "number",
+        description:
+          "The percentage associated with the transaction (optional).",
+      },
+      createdAt: {
+        type: "string",
+        format: "date-time",
+        description: "Timestamp when the transaction was created.",
+      },
+      updatedAt: {
+        type: "string",
+        format: "date-time",
+        description: "Timestamp when the transaction was last updated.",
+      },
+    },
+    required: ["user_id", "name", "amount", "type", "category"],
   },
 };
 

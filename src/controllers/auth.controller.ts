@@ -83,6 +83,7 @@ const createUserController = asyncHandler(
           email: newUser.user.email,
         },
         token: newUser.token,
+        balance: newUser.balance,
       },
     });
   }

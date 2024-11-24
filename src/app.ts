@@ -3,8 +3,6 @@ import swaggerUi from "swagger-ui-express";
 import specs from "./config/swagger.config";
 import initializeDatabaseandServer from "./data-source";
 import categoryRoute from "./routes/category.route";
-import expenseRoute from "./routes/expense.route";
-import incomeRoute from "./routes/income.route";
 import authRoute from "./routes/auth.route";
 import goalRoute from "./routes/goal.route";
 import budgetRoute from "./routes/budget.route";
@@ -21,8 +19,6 @@ cron.schedule("*/2 * * * *", sendPingRequest);
 
 app.use("/api/v1/auth", authRoute);
 app.use("/api/v1", categoryRoute);
-app.use("/api/v1", expenseRoute);
-app.use("/api/v1", incomeRoute);
 app.use("/api/v1", goalRoute);
 app.use("/api/v1", transactionRoute);
 app.use("/api/v1", budgetRoute);

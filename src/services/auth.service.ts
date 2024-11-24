@@ -26,7 +26,8 @@ const createUserService = async (
     id: savedUser._id,
     email: savedUser.email,
   });
-  return { user: savedUser, token };
+  const balance = await getAccountBalanceForUserService(savedUser?.id);
+  return { user: savedUser, token, balance };
 };
 
 const loginUserService = async (

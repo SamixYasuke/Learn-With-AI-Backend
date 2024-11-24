@@ -1,32 +1,59 @@
-import express from "express";
+import { Router } from "express";
+import { authenticateJwt } from "../middlewares/authenticateJwt.middleware";
 import {
   getAllTransactionsController,
-  getTotalExpenseForUserController,
-  getTotalIncomeForUserController,
-  getAccountBalanceController,
+  createIncomeController,
+  categoriseExpenseController,
+  categoriseIncomeController,
+  createExpenseController,
+  getExpenseSummaryController,
+  getIncomeSummaryController,
+  getTotalExpenseController,
+  getTotalIncomeController,
 } from "../controllers/transaction.controller";
-import { authenticateJwt } from "../middlewares/authenticateJwt.middleware";
 
-const router = express.Router();
+const router = Router();
 
 router.get("/transactions", authenticateJwt, getAllTransactionsController);
 
+router.post("/transactions/income", authenticateJwt, createIncomeController);
+
 router.get(
-  "/transactions/income",
+  "/transactions/income/total",
   authenticateJwt,
-  getTotalIncomeForUserController
+  getTotalIncomeController
 );
 
 router.get(
-  "/transactions/expense",
+  "/transactions/income/categorize",
   authenticateJwt,
-  getTotalExpenseForUserController
+  categoriseIncomeController
 );
 
 router.get(
-  "/transactions/balance",
+  "/transactions/income/summary",
   authenticateJwt,
-  getAccountBalanceController
+  getIncomeSummaryController
+);
+
+router.post("/transactions/expense", authenticateJwt, createExpenseController);
+
+router.get(
+  "/transactions/expense/total",
+  authenticateJwt,
+  getTotalExpenseController
+);
+
+router.get(
+  "/transactions/expense/categorize",
+  authenticateJwt,
+  categoriseExpenseController
+);
+
+router.get(
+  "/transactions/expense/summary",
+  authenticateJwt,
+  getExpenseSummaryController
 );
 
 export default router;
