@@ -28,6 +28,13 @@ app.use("/api/v1", transactionRoute);
 app.use("/api/v1", budgetRoute);
 app.use("/api/v1/ping", pingRoute);
 
+app.get("/api/v1/true", (req: Request, res: Response) => {
+  res.status(200).json({
+    status_code: 200,
+    message: true,
+  });
+});
+
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 app.use(errorHandler);
 
