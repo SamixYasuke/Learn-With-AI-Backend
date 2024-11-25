@@ -1,7 +1,4 @@
-import {
-  createBudgetService,
-  getAllBudgetsService,
-} from "../services/budget.service";
+import { createBudgetService, getAllBudgets } from "../services/budget.service";
 import { asyncHandler } from "../utils/asyncHandler";
 import { Request, Response } from "express";
 
@@ -175,7 +172,7 @@ const createBudgetController = asyncHandler(
 const getAllBudgetsController = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
     const user_id = req.user.id;
-    const budgets = await getAllBudgetsService(user_id);
+    const budgets = await getAllBudgets(user_id);
     res.status(200).json({
       status_code: 200,
       message: "Budgets Retrieved Successfully",
