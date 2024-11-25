@@ -16,6 +16,11 @@ const CategorySchema: Schema = new Schema(
       required: true,
       enum: ["need", "want", "saving"],
     },
+    category_type: {
+      type: String,
+      required: true,
+      enum: ["income", "expense"],
+    },
   },
   {
     timestamps: true,

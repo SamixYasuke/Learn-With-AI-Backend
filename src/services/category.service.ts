@@ -4,6 +4,7 @@ import { Category, ICategory } from "../models/category.model";
 interface CategoryData {
   category_name: string;
   priority_type: string;
+  category_type: string;
 }
 
 const createCategoryService = async (

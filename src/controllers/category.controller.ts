@@ -29,6 +29,10 @@ import {
  *                 type: string
  *                 description: The priority type of the category.
  *                 example: want or need
+ *               category_type:
+ *                 type: string
+ *                 description: The type of transaction the category belongs to, it's an enum that only accepts "income" or "expense".
+ *                 example: want or need
  *     responses:
  *       201:
  *         description: Category created successfully.
@@ -52,7 +56,7 @@ import {
  */
 const createCategoryController = asyncHandler(
   async (req: Request, res: Response) => {
-    const { category_name, priority_type } = req.body;
+    const { category_name, priority_type, category_type } = req.body;
     if (!category_name || !priority_type) {
       throw new CustomError(
         "Category name and priority type are required",
@@ -62,6 +66,7 @@ const createCategoryController = asyncHandler(
     const category = await createCategoryService({
       category_name,
       priority_type,
+      category_type,
     });
     res.status(201).json({
       status_code: 201,
