@@ -870,7 +870,7 @@ const getExpenseSummaryController = asyncHandler(
 
 /**
  * @swagger
- * /api/v1/tranactions/balance:
+ * /api/v1/transactions/balance:
  *   get:
  *     summary: Fetch the account balance for the authenticated user
  *     description: Retrieve the total balance for the authenticated user by calculating the difference between their total income and total expenses.
