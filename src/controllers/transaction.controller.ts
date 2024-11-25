@@ -10,6 +10,7 @@ import {
   getIncomeSummaryService,
   getTotalExpenseService,
   getTotalIncomeService,
+  getAccountBalanceForUserService,
 } from "../services/transaction.service";
 
 export interface AuthenticatedRequest extends Request {
@@ -867,6 +868,77 @@ const getExpenseSummaryController = asyncHandler(
   }
 );
 
+/**
+ * @swagger
+ * /api/v1/tranactions/balance:
+ *   get:
+ *     summary: Fetch the account balance for the authenticated user
+ *     description: Retrieve the total balance for the authenticated user by calculating the difference between their total income and total expenses.
+ *     tags:
+ *       - Transactions
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: User balance fetched successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status_code:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: User balance fetched successfully
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     balance:
+ *                       type: number
+ *                       example: 150.25
+ *       400:
+ *         description: Invalid user ID
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status_code:
+ *                   type: integer
+ *                   example: 400
+ *                 message:
+ *                   type: string
+ *                   example: Invalid user ID
+ *       401:
+ *         description: Unauthorized - Token missing or invalid
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status_code:
+ *                   type: integer
+ *                   example: 401
+ *                 message:
+ *                   type: string
+ *                   example: Unauthorized
+ */
+const getAccountBalanceForUserController = asyncHandler(
+  async (req: AuthenticatedRequest, res: Response) => {
+    const user_id = req?.user?.id;
+    const balance = await getAccountBalanceForUserService(user_id);
+    return res.status(200).json({
+      status_code: 200,
+      message: "User balance fetched successfully",
+      data: {
+        balance,
+      },
+    });
+  }
+);
+
 export {
   getAllTransactionsController,
   createIncomeController,
@@ -877,4 +949,5 @@ export {
   categoriseExpenseController,
   getIncomeSummaryController,
   getExpenseSummaryController,
+  getAccountBalanceForUserController,
 };

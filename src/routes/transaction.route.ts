@@ -10,11 +10,18 @@ import {
   getIncomeSummaryController,
   getTotalExpenseController,
   getTotalIncomeController,
+  getAccountBalanceForUserController,
 } from "../controllers/transaction.controller";
 
 const router = Router();
 
 router.get("/transactions", authenticateJwt, getAllTransactionsController);
+
+router.get(
+  "/transactions/balance",
+  authenticateJwt,
+  getAccountBalanceForUserController
+);
 
 router.post("/transactions/income", authenticateJwt, createIncomeController);
 
