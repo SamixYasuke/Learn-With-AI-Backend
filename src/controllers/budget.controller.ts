@@ -1,4 +1,8 @@
-import { createBudgetService, getAllBudgets } from "../services/budget.service";
+import {
+  createBudgetService,
+  deleteBudgetService,
+  getAllBudgets,
+} from "../services/budget.service";
 import { asyncHandler } from "../utils/asyncHandler";
 import { Request, Response } from "express";
 
@@ -13,7 +17,7 @@ export interface AuthenticatedRequest extends Request {
  * @swagger
  * /api/v1/budget:
  *   post:
- *     summary: Create a new budget
+ *     summary: Create a new budget and delete the previous budgets
  *     description: Allows an authenticated user to create a budget by specifying the budget name and total income. The income is split into needs, wants, and savings.
  *     tags:
  *       - Budgets
@@ -115,7 +119,7 @@ const createBudgetController = asyncHandler(
  * @swagger
  * /api/budgets:
  *   get:
- *     summary: Retrieve all budgets for the authenticated user
+ *     summary: Retrieve all budget for the authenticated user
  *     description: Fetches all budgets associated with the authenticated user and calculates additional metrics, such as spent amounts, percentages, and balance status for needs, wants, and savings.
  *     tags:
  *       - Budgets
@@ -205,4 +209,80 @@ const getAllBudgetsController = asyncHandler(
   }
 );
 
-export { createBudgetController, getAllBudgetsController };
+/**
+ * @swagger
+ * /budgets:
+ *   delete:
+ *     summary: Delete all budgets for the authenticated user
+ *     description: Deletes all budgets associated with the currently authenticated user.
+ *     tags:
+ *       - Budgets
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Budgets deleted successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status_code:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: "Budget deleted successfully"
+ *       400:
+ *         description: Invalid user ID.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status_code:
+ *                   type: integer
+ *                   example: 400
+ *                 message:
+ *                   type: string
+ *                   example: "Invalid user ID"
+ *       404:
+ *         description: No budgets found for the user.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status_code:
+ *                   type: integer
+ *                   example: 404
+ *                 message:
+ *                   type: string
+ *                   example: "No budget found for the user"
+ *       500:
+ *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status_code:
+ *                   type: integer
+ *                   example: 500
+ *                 message:
+ *                   type: string
+ *                   example: "Internal server error"
+ */
+const deleteBudgetController = asyncHandler(
+  async (req: AuthenticatedRequest, res: Response) => {
+    const user_id = req.user.id;
+    const message = await deleteBudgetService(user_id);
+    res.status(200).json({ status_code: 200, message });
+  }
+);
+
+export {
+  createBudgetController,
+  getAllBudgetsController,
+  deleteBudgetController,
+};

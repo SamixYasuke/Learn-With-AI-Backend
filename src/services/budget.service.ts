@@ -15,7 +15,13 @@ const createBudgetService = async (
     throw new CustomError("Invalid user ID", 400);
   }
 
+  // Delete any existing budgets for the user
+  await Budget.deleteMany({ user_id });
+
+  // Split income into needs, savings, and wants
   const { needs, savings, wants } = splitIncome(total_income);
+
+  // Create and save the new budget
   const budget = new Budget({
     budget_name,
     total_income,
@@ -24,10 +30,10 @@ const createBudgetService = async (
     wants_budget: wants,
     user_id,
   });
+
   const savedBudget = await budget.save();
   return savedBudget;
 };
-
 
 const getAllBudgets = async (userId: string) => {
   // Fetch all budgets for the user
@@ -116,5 +122,18 @@ const getAllBudgets = async (userId: string) => {
   return budgetData;
 };
 
+const deleteBudgetService = async (user_id: string): Promise<string> => {
+  if (!mongoose.Types.ObjectId.isValid(user_id)) {
+    throw new CustomError("Invalid user ID", 400);
+  }
 
-export { createBudgetService, getAllBudgets };
+  const result = await Budget.deleteMany({ user_id });
+
+  if (result.deletedCount === 0) {
+    throw new CustomError("No budget found for the user", 404);
+  }
+
+  return "Budget deleted successfully";
+};
+
+export { createBudgetService, getAllBudgets, deleteBudgetService };
