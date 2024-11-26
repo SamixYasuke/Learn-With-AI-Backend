@@ -10,29 +10,42 @@ const createBudgetService = async (
   user_id: string,
   budget_name: string,
   total_income: number
-): Promise<object> => {
+): Promise<IBudget> => {
   if (!mongoose.Types.ObjectId.isValid(user_id)) {
     throw new CustomError("Invalid user ID", 400);
   }
 
-  // Delete any existing budgets for the user
-  await Budget.deleteMany({ user_id });
-
-  // Split income into needs, savings, and wants
   const { needs, savings, wants } = splitIncome(total_income);
 
-  // Create and save the new budget
-  const budget = new Budget({
+  // Get the current month and year
+  const now = new Date();
+  const month_year = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`; // Format: YYYY-MM
+
+  // Check if a budget already exists for this month
+  const existingBudget = await Budget.findOne({ user_id, month_year });
+
+  if (existingBudget) {
+    // Update the existing budget
+    existingBudget.budget_name = budget_name;
+    existingBudget.total_income = total_income;
+    existingBudget.needs_budget = needs;
+    existingBudget.wants_budget = wants;
+    existingBudget.savings_budget = savings;
+    await existingBudget.save();
+    return existingBudget;
+  }
+
+  // Create a new budget
+  const newBudget = new Budget({
+    user_id,
     budget_name,
     total_income,
     needs_budget: needs,
-    savings_budget: savings,
     wants_budget: wants,
-    user_id,
+    savings_budget: savings,
+    month_year,
   });
-
-  const savedBudget = await budget.save();
-  return savedBudget;
+  return await newBudget.save();
 };
 
 const getAllBudgets = async (userId: string) => {
