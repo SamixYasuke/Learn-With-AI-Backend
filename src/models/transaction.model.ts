@@ -5,7 +5,10 @@ export interface ITransaction extends Document {
   name: string;
   amount: string;
   type: string;
-  category: Schema.Types.ObjectId;
+  category: {
+    category_type: string;
+    priority_type: string;
+  };
   percentage: number;
 }
 
@@ -31,7 +34,7 @@ const TransactionSchema: Schema = new Schema(
       required: true,
     },
     category: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: mongoose.Types.ObjectId,
       ref: "Category",
       required: true,
     },

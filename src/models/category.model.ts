@@ -3,6 +3,7 @@ import mongoose, { Schema, Document } from "mongoose";
 export interface ICategory extends Document {
   category_name: string;
   priority_type: string;
+  category_type: string;
 }
 
 const CategorySchema: Schema = new Schema(
