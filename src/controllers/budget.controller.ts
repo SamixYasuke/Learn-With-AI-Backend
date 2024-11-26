@@ -113,61 +113,85 @@ const createBudgetController = asyncHandler(
 
 /**
  * @swagger
- * /api/v1/budgets:
+ * /api/budgets:
  *   get:
  *     summary: Retrieve all budgets for the authenticated user
- *     description: Fetches all budgets associated with the currently authenticated user.
+ *     description: Fetches all budgets associated with the authenticated user and calculates additional metrics, such as spent amounts, percentages, and balance status for needs, wants, and savings.
  *     tags:
  *       - Budgets
  *     security:
- *       - bearerAuth: []
+ *       - BearerAuth: []
  *     responses:
  *       200:
- *         description: Successfully retrieved budgets.
+ *         description: Successfully retrieved budgets with detailed calculations.
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
- *                 status_code:
- *                   type: integer
- *                   example: 200
  *                 message:
  *                   type: string
- *                   example: Budgets Retrieved Successfully
+ *                   example: "Budgets retrieved successfully."
  *                 data:
- *                   type: object
- *                   properties:
- *                     budgets:
- *                       type: array
- *                       items:
- *                         $ref: '#/components/schemas/Budget'
- *       400:
- *         description: Invalid user ID or bad request.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status_code:
- *                   type: integer
- *                   example: 400
- *                 message:
- *                   type: string
- *                   example: Invalid user ID
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                         example: "6741f10ba3c7cc340fe76c6e"
+ *                       budget_name:
+ *                         type: string
+ *                         example: "Monthly Budget"
+ *                       user_id:
+ *                         type: string
+ *                         example: "673e38ae9f6032cbf10e888b"
+ *                       total_income:
+ *                         type: number
+ *                         example: 100000
+ *                       needs_budget:
+ *                         type: number
+ *                         example: 50000
+ *                       wants_budget:
+ *                         type: number
+ *                         example: 30000
+ *                       savings_budget:
+ *                         type: number
+ *                         example: 20000
+ *                       needs_spent_amount:
+ *                         type: number
+ *                         example: 25000
+ *                       wants_spent_amount:
+ *                         type: number
+ *                         example: 10000
+ *                       savings_amount:
+ *                         type: number
+ *                         example: 15000
+ *                       needs_spent_percent:
+ *                         type: number
+ *                         example: 50
+ *                       wants_spent_percent:
+ *                         type: number
+ *                         example: 33.33
+ *                       savings_percentage:
+ *                         type: number
+ *                         example: 75
+ *                       is_needs_over_available_balance:
+ *                         type: boolean
+ *                         example: false
+ *                       is_wants_over_available_balance:
+ *                         type: boolean
+ *                         example: false
+ *                       is_savings_over_available_balance:
+ *                         type: boolean
+ *                         example: false
+ *                       is_total_income_exceeded:
+ *                         type: boolean
+ *                         example: false
  *       401:
- *         description: Unauthorized. No valid token provided.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status_code:
- *                   type: integer
- *                   example: 401
- *                 message:
- *                   type: string
- *                   example: Unauthorized
+ *         description: Unauthorized. User is not authenticated.
+ *       500:
+ *         description: Internal server error.
  */
 const getAllBudgetsController = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
