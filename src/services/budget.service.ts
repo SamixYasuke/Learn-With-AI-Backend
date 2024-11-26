@@ -21,7 +21,10 @@ const createBudgetService = async (
   const now = new Date();
   const month_year = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`; // Format: YYYY-MM
 
-  // Check if a budget already exists for this month
+  // Delete all previous budgets
+  await Budget.deleteMany({ user_id });
+
+  // Check if a budget already exists for this month (optional, as we're deleting all budgets above)
   const existingBudget = await Budget.findOne({ user_id, month_year });
 
   if (existingBudget) {
