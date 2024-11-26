@@ -7,6 +7,7 @@ export interface IBudget extends Document {
   needs_budget: number;
   wants_budget: number;
   savings_budget: number;
+  month_year: string;
 }
 
 const BudgetSchema: Schema = new Schema(
@@ -35,6 +36,16 @@ const BudgetSchema: Schema = new Schema(
     savings_budget: {
       type: Number,
       required: false,
+    },
+    month_year: {
+      type: String,
+      required: true,
+      validate: {
+        validator: function (v: string) {
+          return /^\d{4}-(0[1-9]|1[0-2])$/.test(v); // Matches YYYY-MM
+        },
+        message: "month_year must be in the format YYYY-MM",
+      },
     },
   },
   {
