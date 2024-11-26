@@ -92,9 +92,34 @@ const editGoalService = async (
   return "Accumulated amount and goal percentage updated successfully";
 };
 
+const getGoalsStatsService = async (user_id: string) => {
+  const goals = await Goal.find({ user_id });
+  if (!mongoose.Types.ObjectId.isValid(user_id)) {
+    throw new CustomError("Invalid user ID", 400);
+  }
+
+  if (!goals) {
+    throw new CustomError("No goals found for the user", 404);
+  }
+
+  const totalGoals = goals.length;
+  const completedGoals = goals.filter(
+    (goal) => goal.accumulated_amount >= goal.required_amount
+  ).length;
+  const completionPercentage =
+    totalGoals > 0 ? (completedGoals / totalGoals) * 100 : 0;
+
+  return {
+    totalGoals,
+    completedGoals,
+    completionPercentage,
+  };
+};
+
 export {
   getGoalsService,
   getGoalByIdService,
   createGoalService,
   editGoalService,
+  getGoalsStatsService,
 };

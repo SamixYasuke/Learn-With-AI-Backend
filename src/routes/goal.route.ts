@@ -4,10 +4,13 @@ import {
   getGoalByIdController,
   createGoalController,
   editGoalController,
+  getGoalsStatsController,
 } from "../controllers/goal.controller";
 import { authenticateJwt } from "../middlewares/authenticateJwt.middleware";
 
 const router = Router();
+
+router.get("/goals/stats", authenticateJwt, getGoalsStatsController);
 
 router.get("/goals", authenticateJwt, getGoalsController);
 

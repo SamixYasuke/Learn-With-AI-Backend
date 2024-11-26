@@ -6,6 +6,7 @@ import {
   getGoalByIdService,
   createGoalService,
   editGoalService,
+  getGoalsStatsService,
 } from "../services/goal.service";
 
 export interface AuthenticatedRequest extends Request {
@@ -237,9 +238,97 @@ const editGoalController = asyncHandler(
   }
 );
 
+/**
+ * @swagger
+ * /api/v1/goals/stats:
+ *   get:
+ *     summary: Retrieve goal statistics for the authenticated user
+ *     description: Fetches statistics for all goals associated with the authenticated user. It includes the total number of goals, the number of completed goals, and the percentage of completed goals.
+ *     tags:
+ *       - Goals
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved goals statistics.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status_code:
+ *                   type: number
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: "Goals statistics retrieved successfully"
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     totalGoals:
+ *                       type: integer
+ *                       example: 5
+ *                     completedGoals:
+ *                       type: integer
+ *                       example: 3
+ *                     completionPercentage:
+ *                       type: number
+ *                       format: float
+ *                       example: 60.0
+ *       401:
+ *         description: Unauthorized. User is not authenticated.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status_code:
+ *                   type: number
+ *                   example: 401
+ *                 message:
+ *                   type: string
+ *                   example: "Authentication required. Please log in."
+ *       404:
+ *         description: No goals found for the user.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status_code:
+ *                   type: number
+ *                   example: 404
+ *                 message:
+ *                   type: string
+ *                   example: "No goals found for the user."
+ *       500:
+ *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status_code:
+ *                   type: number
+ *                   example: 500
+ *                 message:
+ *                   type: string
+ *                   example: "An unexpected error occurred."
+ */
+const getGoalsStatsController = asyncHandler(
+  async (req: AuthenticatedRequest, res: Response) => {
+    const user_id = req?.user?.id;
+    const stats = await getGoalsStatsService(user_id);
+    res.status(200).json({
+      status_code: 200,
+      message: "Goals statistics retrieved successfully",
+      data: stats,
+    });
+  }
+);
+
 export {
   getGoalsController,
   getGoalByIdController,
   createGoalController,
   editGoalController,
+  getGoalsStatsController,
 };

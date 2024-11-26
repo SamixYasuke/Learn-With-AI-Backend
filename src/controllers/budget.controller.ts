@@ -119,12 +119,12 @@ const createBudgetController = asyncHandler(
  * @swagger
  * /api/v1/budgets:
  *   get:
- *     summary: Retrieve all budget for the authenticated user
+ *     summary: Retrieve all budgets for the authenticated user
  *     description: Fetches all budgets associated with the authenticated user and calculates additional metrics, such as spent amounts, percentages, and balance status for needs, wants, and savings.
  *     tags:
  *       - Budgets
  *     security:
- *       - BearerAuth: []
+ *       - bearerAuth: []  # Correct capitalization for bearerAuth
  *     responses:
  *       200:
  *         description: Successfully retrieved budgets with detailed calculations.
@@ -143,59 +143,98 @@ const createBudgetController = asyncHandler(
  *                     properties:
  *                       _id:
  *                         type: string
+ *                         description: Unique identifier for the budget.
  *                         example: "6741f10ba3c7cc340fe76c6e"
  *                       budget_name:
  *                         type: string
+ *                         description: Name of the budget.
  *                         example: "Monthly Budget"
  *                       user_id:
  *                         type: string
+ *                         description: ID of the user associated with the budget.
  *                         example: "673e38ae9f6032cbf10e888b"
  *                       total_income:
  *                         type: number
+ *                         description: Total income allocated for the budget.
  *                         example: 100000
  *                       needs_budget:
  *                         type: number
+ *                         description: Budget allocated for needs.
  *                         example: 50000
  *                       wants_budget:
  *                         type: number
+ *                         description: Budget allocated for wants.
  *                         example: 30000
  *                       savings_budget:
  *                         type: number
+ *                         description: Budget allocated for savings.
  *                         example: 20000
  *                       needs_spent_amount:
  *                         type: number
+ *                         description: Total amount spent on needs.
  *                         example: 25000
  *                       wants_spent_amount:
  *                         type: number
+ *                         description: Total amount spent on wants.
  *                         example: 10000
  *                       savings_amount:
  *                         type: number
+ *                         description: Total accumulated amount in savings.
  *                         example: 15000
  *                       needs_spent_percent:
  *                         type: number
+ *                         description: Percentage of the needs budget that has been spent.
  *                         example: 50
  *                       wants_spent_percent:
  *                         type: number
+ *                         description: Percentage of the wants budget that has been spent.
  *                         example: 33.33
  *                       savings_percentage:
  *                         type: number
+ *                         description: Percentage of the savings budget achieved.
  *                         example: 75
  *                       is_needs_over_available_balance:
  *                         type: boolean
+ *                         description: Indicates if the needs budget exceeds the available balance.
  *                         example: false
  *                       is_wants_over_available_balance:
  *                         type: boolean
+ *                         description: Indicates if the wants budget exceeds the available balance.
  *                         example: false
  *                       is_savings_over_available_balance:
  *                         type: boolean
+ *                         description: Indicates if the savings budget exceeds the available balance.
  *                         example: false
  *                       is_total_income_exceeded:
  *                         type: boolean
+ *                         description: Indicates if the total expenses exceed the total income.
  *                         example: false
  *       401:
  *         description: Unauthorized. User is not authenticated.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status_code:
+ *                   type: integer
+ *                   example: 401
+ *                 message:
+ *                   type: string
+ *                   example: "Unauthorized access."
  *       500:
  *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status_code:
+ *                   type: integer
+ *                   example: 500
+ *                 message:
+ *                   type: string
+ *                   example: "Internal server error."
  */
 const getAllBudgetsController = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
