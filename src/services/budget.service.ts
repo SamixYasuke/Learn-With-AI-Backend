@@ -49,6 +49,10 @@ const createBudgetService = async (
 };
 
 const getAllBudgets = async (userId: string) => {
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    throw new CustomError("Invalid user ID", 400);
+  }
+
   // Fetch all budgets for the user
   const budgets = await Budget.find({ user_id: userId });
 
@@ -56,10 +60,18 @@ const getAllBudgets = async (userId: string) => {
     return { data: [], message: "No budgets found." };
   }
 
-  // Fetch all transactions and goals for the user
-  const transactions = await Transaction.find({ user_id: userId }).populate(
-    "category"
-  );
+  // Define the current month's date range
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+  // Fetch current month's transactions and goals for the user
+  const transactions = await Transaction.find({
+    user_id: userId,
+    type: "expense",
+    createdAt: { $gte: startOfMonth, $lte: endOfMonth },
+  }).populate("category");
+
   const goals = await Goal.find({ user_id: userId });
 
   // Calculate savings amount
@@ -82,15 +94,13 @@ const getAllBudgets = async (userId: string) => {
 
   // Process budgets
   const budgetData = budgets.map((budget) => {
-    // Filter transactions for the budget
+    // Filter transactions by priority type
     const needsTransactions = transactions.filter(
       (transaction) =>
-        transaction.type === "expense" &&
         transaction.category.priority_type === "need"
     );
     const wantsTransactions = transactions.filter(
       (transaction) =>
-        transaction.type === "expense" &&
         transaction.category.priority_type === "want"
     );
 
@@ -131,7 +141,6 @@ const getAllBudgets = async (userId: string) => {
       is_total_income_exceeded: isTotalIncomeExceeded,
     };
   });
-
   return budgetData;
 };
 
