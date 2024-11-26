@@ -117,7 +117,7 @@ const createBudgetController = asyncHandler(
 
 /**
  * @swagger
- * /api/budgets:
+ * /api/v1/budgets:
  *   get:
  *     summary: Retrieve all budget for the authenticated user
  *     description: Fetches all budgets associated with the authenticated user and calculates additional metrics, such as spent amounts, percentages, and balance status for needs, wants, and savings.
@@ -211,7 +211,7 @@ const getAllBudgetsController = asyncHandler(
 
 /**
  * @swagger
- * /budgets:
+ * /api/v1/budgets:
  *   delete:
  *     summary: Delete all budgets for the authenticated user
  *     description: Deletes all budgets associated with the currently authenticated user.
