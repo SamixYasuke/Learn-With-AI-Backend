@@ -28,6 +28,7 @@ const createBudgetService = async (
   return savedBudget;
 };
 
+
 const getAllBudgets = async (userId: string) => {
   // Fetch all budgets for the user
   const budgets = await Budget.find({ user_id: userId });
@@ -47,6 +48,18 @@ const getAllBudgets = async (userId: string) => {
     (acc, goal) => acc + goal.accumulated_amount,
     0
   );
+
+  // Utility function for calculating percentages and flags
+  const calculateSpentPercent = (
+    spentAmount: number,
+    budget: number
+  ): { percent: number; isOver: boolean } => {
+    const rawPercent = (spentAmount / budget) * 100;
+    return {
+      percent: rawPercent > 100 ? 100 : rawPercent, // Cap at 100%
+      isOver: rawPercent > 100, // Flag if exceeds 100%
+    };
+  };
 
   // Process budgets
   const budgetData = budgets.map((budget) => {
@@ -72,19 +85,13 @@ const getAllBudgets = async (userId: string) => {
       0
     );
 
-    // Calculate percentages
-    const needsSpentPercent =
-      (needsSpentAmount / budget.needs_budget) * 100 || 0;
-    const wantsSpentPercent =
-      (wantsSpentAmount / budget.wants_budget) * 100 || 0;
+    // Calculate percentages and flags
+    const { percent: needsSpentPercent, isOver: isNeedsOverAvailableBalance } =
+      calculateSpentPercent(needsSpentAmount, budget.needs_budget);
+    const { percent: wantsSpentPercent, isOver: isWantsOverAvailableBalance } =
+      calculateSpentPercent(wantsSpentAmount, budget.wants_budget);
     const savingsPercentage =
       (totalAccumulatedSavings / budget.savings_budget) * 100 || 0;
-
-    // Check if budgets are exceeded
-    const isNeedsOverAvailableBalance = needsSpentAmount > budget.needs_budget;
-    const isWantsOverAvailableBalance = wantsSpentAmount > budget.wants_budget;
-    const isSavingsOverAvailableBalance =
-      totalAccumulatedSavings > budget.savings_budget;
 
     // Check if total income is exceeded
     const totalExpenses = needsSpentAmount + wantsSpentAmount;
@@ -100,12 +107,14 @@ const getAllBudgets = async (userId: string) => {
       savings_percentage: savingsPercentage,
       is_needs_over_available_balance: isNeedsOverAvailableBalance,
       is_wants_over_available_balance: isWantsOverAvailableBalance,
-      is_savings_over_available_balance: isSavingsOverAvailableBalance,
+      is_savings_over_available_balance:
+        totalAccumulatedSavings > budget.savings_budget,
       is_total_income_exceeded: isTotalIncomeExceeded,
     };
   });
 
   return budgetData;
 };
+
 
 export { createBudgetService, getAllBudgets };
