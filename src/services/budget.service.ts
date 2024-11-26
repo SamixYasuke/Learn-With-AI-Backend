@@ -56,11 +56,11 @@ const getAllBudgets = async (userId: string) => {
     throw new CustomError("Invalid user ID", 400);
   }
 
-  // Fetch all budgets for the user
-  const budgets = await Budget.find({ user_id: userId });
+  // Fetch the user's budget
+  const budget = await Budget.findOne({ user_id: userId });
 
-  if (!budgets || budgets.length === 0) {
-    return { data: [], message: "No budgets found." };
+  if (!budget) {
+    return null;
   }
 
   // Define the current month's date range
@@ -95,57 +95,54 @@ const getAllBudgets = async (userId: string) => {
     };
   };
 
-  // Process budgets
-  const budgetData = budgets.map((budget) => {
-    // Filter transactions by priority type
-    const needsTransactions = transactions.filter(
-      (transaction) =>
-        transaction.category.priority_type === "need"
-    );
-    const wantsTransactions = transactions.filter(
-      (transaction) =>
-        transaction.category.priority_type === "want"
-    );
+  // Filter transactions by priority type
+  const needsTransactions = transactions.filter(
+    (transaction) => transaction.category.priority_type === "need"
+  );
+  const wantsTransactions = transactions.filter(
+    (transaction) => transaction.category.priority_type === "want"
+  );
 
-    // Calculate spent amounts
-    const needsSpentAmount = needsTransactions.reduce(
-      (acc, transaction) => acc + parseFloat(transaction.amount),
-      0
-    );
-    const wantsSpentAmount = wantsTransactions.reduce(
-      (acc, transaction) => acc + parseFloat(transaction.amount),
-      0
-    );
+  // Calculate spent amounts
+  const needsSpentAmount = needsTransactions.reduce(
+    (acc, transaction) => acc + parseFloat(transaction.amount),
+    0
+  );
+  const wantsSpentAmount = wantsTransactions.reduce(
+    (acc, transaction) => acc + parseFloat(transaction.amount),
+    0
+  );
 
-    // Calculate percentages and flags
-    const { percent: needsSpentPercent, isOver: isNeedsOverAvailableBalance } =
-      calculateSpentPercent(needsSpentAmount, budget.needs_budget);
-    const { percent: wantsSpentPercent, isOver: isWantsOverAvailableBalance } =
-      calculateSpentPercent(wantsSpentAmount, budget.wants_budget);
-    const savingsPercentage =
-      (totalAccumulatedSavings / budget.savings_budget) * 100 || 0;
+  // Calculate percentages and flags
+  const { percent: needsSpentPercent, isOver: isNeedsOverAvailableBalance } =
+    calculateSpentPercent(needsSpentAmount, budget.needs_budget);
+  const { percent: wantsSpentPercent, isOver: isWantsOverAvailableBalance } =
+    calculateSpentPercent(wantsSpentAmount, budget.wants_budget);
+  const savingsPercentage = Math.min(
+    (totalAccumulatedSavings / budget.savings_budget) * 100,
+    100
+  );
 
-    // Check if total income is exceeded
-    const totalExpenses = needsSpentAmount + wantsSpentAmount;
-    const isTotalIncomeExceeded = totalExpenses > budget.total_income;
+  // Check if total income is exceeded
+  const totalExpenses = needsSpentAmount + wantsSpentAmount;
+  const isTotalIncomeExceeded = totalExpenses > budget.total_income;
 
-    return {
-      ...budget.toObject(),
-      needs_spent_amount: needsSpentAmount,
-      wants_spent_amount: wantsSpentAmount,
-      savings_amount: totalAccumulatedSavings,
-      needs_spent_percent: needsSpentPercent,
-      wants_spent_percent: wantsSpentPercent,
-      savings_percentage: savingsPercentage,
-      is_needs_over_available_balance: isNeedsOverAvailableBalance,
-      is_wants_over_available_balance: isWantsOverAvailableBalance,
-      is_savings_over_available_balance:
-        totalAccumulatedSavings > budget.savings_budget,
-      is_total_income_exceeded: isTotalIncomeExceeded,
-    };
-  });
-  return budgetData;
+  return {
+    ...budget.toObject(),
+    needs_spent_amount: needsSpentAmount,
+    wants_spent_amount: wantsSpentAmount,
+    savings_amount: totalAccumulatedSavings,
+    needs_spent_percent: needsSpentPercent,
+    wants_spent_percent: wantsSpentPercent,
+    savings_percentage: savingsPercentage,
+    is_needs_over_available_balance: isNeedsOverAvailableBalance,
+    is_wants_over_available_balance: isWantsOverAvailableBalance,
+    is_savings_over_available_balance:
+      totalAccumulatedSavings > budget.savings_budget,
+    is_total_income_exceeded: isTotalIncomeExceeded,
+  };
 };
+
 
 const deleteBudgetService = async (user_id: string): Promise<string> => {
   if (!mongoose.Types.ObjectId.isValid(user_id)) {
