@@ -1,6 +1,5 @@
 import swaggerJsdoc, { OAS3Definition } from "swagger-jsdoc";
 import dotenv from "dotenv";
-import schemas from "../models/swagger.models";
 
 dotenv.config();
 
@@ -31,7 +30,6 @@ const swaggerDefinition = {
         bearerFormat: "JWT",
       },
     },
-    schemas,
   },
   security: [
     {
