@@ -1,5 +1,4 @@
 import express from "express";
-import "../config/passport.config";
 import {
   registerUserWithEmailPasswordController,
   loginUserWithEmailPasswordController,

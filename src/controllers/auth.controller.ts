@@ -4,7 +4,6 @@ import {
   loginUserWithEmailPasswordService,
   registerUserWithEmailPasswordService,
 } from "../services/auth.service";
-import { generateJwt } from "../utils/helper";
 
 const registerUserWithEmailPasswordController = asyncHandler(
   async (req: Request, res: Response) => {
