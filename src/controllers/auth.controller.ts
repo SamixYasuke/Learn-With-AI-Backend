@@ -32,20 +32,7 @@ const loginUserWithEmailPasswordController = asyncHandler(
   }
 );
 
-const authenticateWithGoogleAuthController = asyncHandler(
-  async (req: Request, res: Response) => {
-    const user = req.user as any;
-    const token = generateJwt(user);
-    res.json({
-      message: "Google OAuth successful",
-      user,
-      token,
-    });
-  }
-);
-
 export {
   registerUserWithEmailPasswordController,
   loginUserWithEmailPasswordController,
-  authenticateWithGoogleAuthController,
 };

@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction } from "express";
+import express from "express";
 import swaggerUi from "swagger-ui-express";
 import specs from "./config/swagger.config";
 import initializeDatabaseandServer from "./data-source";

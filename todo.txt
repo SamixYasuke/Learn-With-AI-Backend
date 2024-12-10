@@ -1,8 +1,0 @@
-- create /transactions/income route [POST]
-- create /transactions/expense route [POST]
-- create /transactions/income/total route [GET]
-- create /transactions/expense/total route [GET]
-- create /transactions/income/categorize route [GET]
-- create /transactions/expense/categorize route [GET]
-- create /transactions/income/summary route [GET]
-- create /transactions/expense/summary route [GET]
