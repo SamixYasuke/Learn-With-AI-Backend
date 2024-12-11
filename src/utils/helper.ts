@@ -1,9 +1,11 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { CustomError } from "../errors/CustomError";
 import { randomBytes } from "crypto";
+import cloudinary from "../config/cloudinary.config";
+import fs from "fs/promises";
 
 const JWT_SECRET = process.env.JWT_SECRET;
-const JWT_EXPIRATION = "1h";
+const JWT_EXPIRATION = process.env.JWT_EXPIRATION;
 
 /**
  * Generate a 6-character OTP.
@@ -53,27 +55,23 @@ const verifyJwt = (token: string): JwtPayload | null => {
   }
 };
 
-type SplitIncomeResult = {
-  needs: number;
-  wants: number;
-  savings: number;
-};
-
 /**
- * Splits an income into 50% for needs, 30% for wants, and 20% for savings.
- * @param income - The total income to split.
- * @returns An object with the split values for needs, wants, and savings.
+ * Upload a file to Cloudinary.
+ * @param {string} filePath - The path of the file to upload.
+ * @returns {Promise<Object>} The result of the upload containing file metadata.
+ * @throws {Error} If the file upload fails.
  */
-const splitIncome = (income: number): SplitIncomeResult => {
-  if (income < 0) {
-    throw new Error("Income cannot be negative");
+const uploadToCloudinary = async (filePath: string) => {
+  try {
+    const result = await cloudinary.uploader.upload(filePath, {
+      resource_type: "raw",
+      folder: "lesson_notes",
+    });
+    await fs.unlink(filePath); // Delete local file after upload
+    return result;
+  } catch (error) {
+    throw new Error("File upload to Cloudinary failed!");
   }
-
-  const needs = parseFloat((income * 0.5).toFixed(2));
-  const wants = parseFloat((income * 0.3).toFixed(2));
-  const savings = parseFloat((income * 0.2).toFixed(2));
-
-  return { needs, wants, savings };
 };
 
-export { generateOtp, generateJwt, verifyJwt, splitIncome };
+export { generateOtp, generateJwt, verifyJwt, uploadToCloudinary };

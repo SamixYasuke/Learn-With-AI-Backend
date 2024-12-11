@@ -4,7 +4,7 @@ interface IUser extends Document {
   name: string;
   email: string;
   password?: string;
-  auth_id?: string;
+  google_id?: string;
   avatar?: string;
   profile?: Types.ObjectId;
   createdAt: Date;
@@ -25,7 +25,7 @@ const UserSchema = new Schema<IUser>(
     password: {
       type: String,
     },
-    auth_id: {
+    google_id: {
       type: String,
     },
     avatar: {

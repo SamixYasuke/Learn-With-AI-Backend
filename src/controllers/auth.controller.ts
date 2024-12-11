@@ -23,7 +23,7 @@ const registerUserWithEmailPasswordController = asyncHandler(
 const loginUserWithEmailPasswordController = asyncHandler(
   async (req: Request, res: Response) => {
     const { email, password } = req.body;
-    const user = loginUserWithEmailPasswordService(email, password);
+    const user = await loginUserWithEmailPasswordService(email, password);
     res.status(200).json({
       message: "Login successful",
       data: user,

@@ -18,7 +18,17 @@ const registerUserWithEmailPasswordService = async (
     password: hashedPassword,
     name,
   });
-  return user;
+  const token = generateJwt({
+    id: user.id,
+    email: user.email,
+  });
+  const cleaned_user = {
+    name: user?.name,
+    token,
+  };
+  return {
+    user: cleaned_user,
+  };
 };
 
 const loginUserWithEmailPasswordService = async (
@@ -33,9 +43,12 @@ const loginUserWithEmailPasswordService = async (
   if (!isMatch) {
     throw new CustomError("Invalid Password!", 401);
   }
-  const token = generateJwt(user);
+  const token = generateJwt({
+    id: user.id,
+    email: user.email,
+  });
   return {
-    user,
+    name: user?.name,
     token,
   };
 };

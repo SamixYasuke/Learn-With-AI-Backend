@@ -1,3 +1,7 @@
+/**
+ * A custom Error Handler for different type of http errors
+ * @param payload - (message: string, statusCode: number)
+ */
 export class CustomError extends Error {
   statusCode: number;
 
