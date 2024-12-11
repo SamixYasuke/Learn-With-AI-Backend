@@ -3,8 +3,15 @@ import { asyncHandler } from "../utils/asyncHandler";
 import { verifyJwt } from "../utils/helper";
 import { CustomError } from "../errors/CustomError";
 
+export interface AuthenticatedRequest extends Request {
+  user?: {
+    id?: string;
+    email?: string;
+  };
+}
+
 export const authenticateJwt = asyncHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -22,7 +29,6 @@ export const authenticateJwt = asyncHandler(
       id: decoded.id,
       email: decoded.email,
     };
-
     next();
   }
 );

@@ -1,6 +1,7 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document, Types } from "mongoose";
 
 export interface INote extends Document {
+  user_id: Types.ObjectId;
   title: string;
   fileUrl: string;
   fileType: string;
@@ -12,6 +13,10 @@ export interface INote extends Document {
 
 const NoteSchema: Schema = new Schema<INote>(
   {
+    user_id: {
+      type: Schema.Types.ObjectId,
+      required: true,
+    },
     title: {
       type: String,
       required: true,
@@ -22,16 +27,13 @@ const NoteSchema: Schema = new Schema<INote>(
     },
     fileType: {
       type: String,
-      enum: ["PDF", "DOCX", "TXT"],
       required: true,
     },
     summary: {
       type: String,
-      required: true,
     },
     topics: {
       type: [String],
-      required: true,
     },
   },
   {

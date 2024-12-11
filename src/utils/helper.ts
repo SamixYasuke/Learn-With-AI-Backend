@@ -67,7 +67,7 @@ const uploadToCloudinary = async (filePath: string) => {
       resource_type: "raw",
       folder: "lesson_notes",
     });
-    await fs.unlink(filePath); // Delete local file after upload
+    await fs.unlink(filePath);
     return result;
   } catch (error) {
     throw new Error("File upload to Cloudinary failed!");
