@@ -2,7 +2,11 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import { CustomError } from "../errors/CustomError";
 import { randomBytes } from "crypto";
 import cloudinary from "../config/cloudinary.config";
+import pdfParse from "pdf-parse";
+import mammoth from "mammoth";
+import textract from "textract";
 import fs from "fs/promises";
+import fsSync from "fs";
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRATION = process.env.JWT_EXPIRATION;
@@ -74,4 +78,42 @@ const uploadToCloudinary = async (filePath: string) => {
   }
 };
 
-export { generateOtp, generateJwt, verifyJwt, uploadToCloudinary };
+/**
+ * Converts a document file (PDF, DOC, DOCX, TXT) to text based on its MIME type.
+ * @param {string} filePath - The path to the file.
+ * @param {string} mimeType - The MIME type of the file (e.g., application/pdf, text/plain).
+ * @returns {Promise<string>} - The extracted text content.
+ */
+const docToText = async (filePath: string, mimeType: string) => {
+  try {
+    switch (mimeType) {
+      case "application/pdf":
+        const pdfBuffer = fsSync.readFileSync(filePath);
+        const pdfData = await pdfParse(pdfBuffer);
+        return pdfData.text;
+
+      case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+        const docxBuffer = fsSync.readFileSync(filePath);
+        const docxData = await mammoth.extractRawText({ buffer: docxBuffer });
+        return docxData.value;
+
+      case "application/msword":
+        return new Promise((resolve, reject) => {
+          textract.fromFileWithPath(filePath, (err, text) => {
+            if (err) reject(err);
+            else resolve(text);
+          });
+        });
+
+      case "text/plain":
+        return fsSync.readFileSync(filePath, "utf8");
+
+      default:
+        throw new Error(`Unsupported MIME type: ${mimeType}`);
+    }
+  } catch (error) {
+    throw new Error(`Error extracting text: ${error.message}`);
+  }
+};
+
+export { generateOtp, generateJwt, verifyJwt, uploadToCloudinary, docToText };

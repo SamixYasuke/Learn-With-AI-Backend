@@ -6,7 +6,7 @@ export interface INote extends Document {
   fileUrl: string;
   fileType: string;
   summary: string;
-  topics: string[];
+  topics: object[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -32,9 +32,7 @@ const NoteSchema: Schema = new Schema<INote>(
     summary: {
       type: String,
     },
-    topics: {
-      type: [String],
-    },
+    topics: [Object],
   },
   {
     timestamps: true,
