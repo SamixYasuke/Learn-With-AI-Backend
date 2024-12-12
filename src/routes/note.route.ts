@@ -1,15 +1,26 @@
 import upload from "../config/multer.config";
 import { Router } from "express";
 import { authenticateJwt } from "../middlewares/authenticateJwt.middleware";
-import { uploadUserNoteController } from "../controllers/note.controller";
+import {
+  getUserNotesController,
+  getUserNoteByIdController,
+  uploadUserNoteController,
+  deleteUserNoteController,
+} from "../controllers/note.controller";
 
 const router = Router();
 
+router.get("/note", authenticateJwt, getUserNotesController);
+
+router.get("/note/:note_id", authenticateJwt, getUserNoteByIdController);
+
 router.post(
-  "/upload",
+  "/note/upload",
   authenticateJwt,
   upload.single("note"),
   uploadUserNoteController
 );
+
+router.delete("/note/:note_id", authenticateJwt, deleteUserNoteController);
 
 export default router;

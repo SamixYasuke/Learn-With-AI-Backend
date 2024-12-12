@@ -9,7 +9,7 @@ const app = express();
 
 app.use(express.json());
 app.use("/api/v1/auth", authRoute);
-app.use("/api/v1/note", noteRoute);
+app.use("/api/v1", noteRoute);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 app.use(errorHandler);
 

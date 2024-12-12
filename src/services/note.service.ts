@@ -6,6 +6,37 @@ import aiNoteResponse from "../utils/ai";
 import fs from "fs";
 import path from "path";
 
+const getUserNotesService = async (user_id: string): Promise<object> => {
+  const notes = await Note.find({ user_id });
+
+  if (notes.length === 0) {
+    return [];
+  }
+
+  const note_data = notes.map((note) => ({
+    id: note?._id,
+    note_name: note.title,
+  }));
+  return note_data;
+};
+
+const getUserNoteByIdService = async (
+  user_id: string,
+  note_id: string
+): Promise<object> => {
+  const note = await Note.findById(note_id);
+
+  if (!note) {
+    throw new CustomError("Note not found", 404);
+  }
+
+  if (note?.user_id.toString() !== user_id) {
+    throw new CustomError("This note doesn't belong to this user", 403);
+  }
+
+  return note;
+};
+
 const uploadUserNoteService = async (
   user_id: string,
   req: AuthenticatedRequest
@@ -50,4 +81,30 @@ const uploadUserNoteService = async (
   };
 };
 
-export { uploadUserNoteService };
+const deleteUserNoteService = async (
+  user_id: string,
+  note_id: string
+): Promise<object> => {
+  const note = await Note.findOne({ _id: note_id });
+
+  if (!note) {
+    throw new CustomError("Note not found", 404);
+  }
+
+  if (note.user_id.toString() !== user_id) {
+    throw new CustomError(
+      "This note can't be deleted as it doesn't belong to this user",
+      403
+    );
+  }
+
+  await note.deleteOne();
+  return { note_id };
+};
+
+export {
+  getUserNotesService,
+  getUserNoteByIdService,
+  uploadUserNoteService,
+  deleteUserNoteService,
+};
