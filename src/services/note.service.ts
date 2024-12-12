@@ -2,6 +2,7 @@ import { Note } from "../models/note.model";
 import { CustomError } from "../errors/CustomError";
 import { uploadToCloudinary } from "../utils/helper";
 import { AuthenticatedRequest } from "../middlewares/authenticateJwt.middleware";
+import aiNoteResponse from "../utils/ai";
 
 const uploadUserNoteService = async (
   user_id: string,
