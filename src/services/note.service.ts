@@ -83,20 +83,15 @@ const deleteUserNoteService = async (
   user_id: string,
   note_id: string
 ): Promise<object> => {
-  const note = await Note.findOne({ _id: note_id });
+  const note = await Note.findOne({ _id: note_id, user_id });
 
   if (!note) {
-    throw new CustomError("Note not found", 404);
+    throw new CustomError("Note not found or doesn't belong to this user", 404);
   }
 
-  if (note.user_id.toString() !== user_id) {
-    throw new CustomError(
-      "This note can't be deleted as it doesn't belong to this user",
-      403
-    );
-  }
-
+  await Conversation.deleteMany({ note_id });
   await note.deleteOne();
+
   return { note_id };
 };
 

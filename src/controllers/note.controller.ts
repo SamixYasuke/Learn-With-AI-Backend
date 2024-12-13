@@ -83,9 +83,7 @@ const getQuestionsByNoteIdController = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
     const user_id = req?.user?.id;
     const { note_id } = req?.params;
-
     const questions = await getQuestionsByNoteIdService(user_id, note_id);
-
     res.status(200).json({
       message: "Question Fetched successfully!",
       data: questions,
