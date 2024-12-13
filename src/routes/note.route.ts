@@ -6,6 +6,8 @@ import {
   getUserNoteByIdController,
   uploadUserNoteController,
   deleteUserNoteController,
+  askAIQuestionBasedOnNoteController,
+  getQuestionsByNoteIdController,
 } from "../controllers/note.controller";
 
 const router = Router();
@@ -13,6 +15,18 @@ const router = Router();
 router.get("/note", authenticateJwt, getUserNotesController);
 
 router.get("/note/:note_id", authenticateJwt, getUserNoteByIdController);
+
+router.post(
+  "/note/:note_id/ask",
+  authenticateJwt,
+  askAIQuestionBasedOnNoteController
+);
+
+router.get(
+  "/note/:note_id/questions",
+  authenticateJwt,
+  getQuestionsByNoteIdController
+);
 
 router.post(
   "/note/upload",

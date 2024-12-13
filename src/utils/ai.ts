@@ -3,6 +3,7 @@ import { z } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
 import dotenv from "dotenv";
 import { saveNotePersona } from "../persona/save-note.persona";
+import { chatWithNotePersona } from "../persona/chat-with-note.persona";
 
 dotenv.config();
 const OpenAI_API_KEY = process.env.OPENAI_API_KEY;
@@ -18,6 +19,11 @@ const noteResponse = z.object({
   explanation_three: z.string(),
   explanation_four: z.string(),
   topics: z.array(topic),
+});
+
+const userQuestionResponse = z.object({
+  question: z.string(),
+  answer: z.string(),
 });
 
 const aiNoteResponse = async (user_note: string) => {
@@ -37,4 +43,24 @@ const aiNoteResponse = async (user_note: string) => {
   return response;
 };
 
-export default aiNoteResponse;
+const aiNoteChatResponse = async (
+  user_question: string,
+  note_context: string
+) => {
+  const completion = await openai.beta.chat.completions.parse({
+    model: "gpt-4o-mini",
+    messages: [
+      {
+        role: "system",
+        content: chatWithNotePersona(note_context),
+      },
+      { role: "user", content: user_question },
+    ],
+    response_format: zodResponseFormat(userQuestionResponse, "user_question"),
+  });
+
+  const response = completion.choices[0].message.parsed;
+  return response;
+};
+
+export { aiNoteResponse, aiNoteChatResponse };
