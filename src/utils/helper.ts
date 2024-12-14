@@ -84,34 +84,51 @@ const uploadToCloudinary = async (filePath: string) => {
  * @param {string} mimeType - The MIME type of the file (e.g., application/pdf, text/plain).
  * @returns {Promise<string>} - The extracted text content.
  */
-const docToText = async (filePath: string, mimeType: string) => {
+const docToText = async (
+  filePath: string,
+  mimeType: string
+): Promise<string> => {
   try {
+    let extractedText = "";
+
     switch (mimeType) {
       case "application/pdf":
         const pdfBuffer = fsSync.readFileSync(filePath);
         const pdfData = await pdfParse(pdfBuffer);
-        return pdfData.text;
+        extractedText = pdfData.text;
+        break;
 
       case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
         const docxBuffer = fsSync.readFileSync(filePath);
         const docxData = await mammoth.extractRawText({ buffer: docxBuffer });
-        return docxData.value;
+        extractedText = docxData.value;
+        break;
 
       case "application/msword":
-        return new Promise((resolve, reject) => {
+        extractedText = await new Promise((resolve, reject) => {
           textract.fromFileWithPath(filePath, (err, text) => {
-            if (err) reject(err);
-            else resolve(text);
+            if (err) return reject(err);
+            resolve(text);
           });
         });
+        break;
 
       case "text/plain":
-        return fsSync.readFileSync(filePath, "utf8");
+        extractedText = fsSync.readFileSync(filePath, "utf8");
+        break;
 
       default:
         throw new Error(`Unsupported MIME type: ${mimeType}`);
     }
+
+    await fs.unlink(filePath);
+    return extractedText;
   } catch (error) {
+    try {
+      await fs.unlink(filePath);
+    } catch (unlinkError) {
+      console.error(`Failed to delete file: ${unlinkError.message}`);
+    }
     throw new Error(`Error extracting text: ${error.message}`);
   }
 };
