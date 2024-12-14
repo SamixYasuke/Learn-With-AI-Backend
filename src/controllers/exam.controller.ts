@@ -3,6 +3,7 @@ import { AuthenticatedRequest } from "../middlewares/authenticateJwt.middleware"
 import {
   generateUserQuestionFromNoteService,
   submitUserAnswersService,
+  getGradedQuestionByIdService,
 } from "../services/exam.service";
 import { asyncHandler } from "../utils/asyncHandler";
 
@@ -46,4 +47,25 @@ const submitUserAnswersController = asyncHandler(
   }
 );
 
-export { generateUserQuestionFromNoteController, submitUserAnswersController };
+const getGradedQuestionByIdController = asyncHandler(
+  async (req: AuthenticatedRequest, res: Response) => {
+    const user_id = req?.user?.id;
+    const { question_id } = req?.params;
+
+    const questionById = await getGradedQuestionByIdService(
+      user_id,
+      question_id
+    );
+
+    res.status(201).json({
+      message: "Graded Question Retrieved successfully!",
+      data: questionById,
+    });
+  }
+);
+
+export {
+  generateUserQuestionFromNoteController,
+  submitUserAnswersController,
+  getGradedQuestionByIdController,
+};

@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   generateUserQuestionFromNoteController,
   submitUserAnswersController,
+  getGradedQuestionByIdController,
 } from "../controllers/exam.controller";
 import { authenticateJwt } from "../middlewares/authenticateJwt.middleware";
 
@@ -17,6 +18,12 @@ router.post(
   "/exams/submit/:note_id",
   authenticateJwt,
   submitUserAnswersController
+);
+
+router.get(
+  "/exams/graded/:question_id",
+  authenticateJwt,
+  getGradedQuestionByIdController
 );
 
 export default router;

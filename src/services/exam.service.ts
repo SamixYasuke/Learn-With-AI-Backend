@@ -101,4 +101,29 @@ const submitUserAnswersService = async (
   };
 };
 
-export { generateUserQuestionFromNoteService, submitUserAnswersService };
+const getGradedQuestionByIdService = async (
+  user_id: string,
+  question_id: string
+) => {
+  const question = await Question.findOne({
+    _id: question_id,
+    user_id,
+    is_graded: true,
+  });
+
+  if (!question) {
+    throw new CustomError(
+      "Graded question not found or doesn't belong to the user!",
+      404
+    );
+  }
+
+  const { questions, ...questionWithoutQuestions } = question.toObject();
+  return { question: questionWithoutQuestions };
+};
+
+export {
+  generateUserQuestionFromNoteService,
+  submitUserAnswersService,
+  getGradedQuestionByIdService,
+};
