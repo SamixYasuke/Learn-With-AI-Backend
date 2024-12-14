@@ -15,12 +15,9 @@ const generateUserQuestionFromNoteService = async (
     throw new CustomError("Question generation failed: Note not found.", 404);
   }
 
-  const existingQuestion = await Question.findOne({ note_id });
+  const existingQuestion = await Question.findOne({ note_id, user_id });
   if (existingQuestion) {
-    throw new CustomError(
-      "Question generation failed: Questions already generated for this note.",
-      400
-    );
+    throw new CustomError("Questions already generated for this note.", 400);
   }
 
   const aiResponse = await aiGenNoteQuestionResponse(
@@ -39,21 +36,22 @@ const generateUserQuestionFromNoteService = async (
     );
   }
 
-  const generatedQuestions = aiResponse.questions.map((question) => ({
+  const newQuestion = new Question({
     user_id,
     note_id,
     question_type,
     number_of_questions,
     difficulty,
-    question_text: question.question,
-    options: question.options || undefined,
-    correct_answer: question.correct_answer || undefined,
-    expected_answer: question.expected_answer || undefined,
-  }));
-  const saveAIGeneratedQuestion = await Question.insertMany(generatedQuestions);
-
+    questions: aiResponse.questions.map((question) => ({
+      question_text: question.question,
+      options: question.options,
+      correct_answer: question.correct_answer,
+      expected_answer: question.expected_answer,
+    })),
+  });
+  const savedQuestion = await newQuestion.save();
   return {
-    questions: saveAIGeneratedQuestion,
+    questions: savedQuestion,
   };
 };
 
