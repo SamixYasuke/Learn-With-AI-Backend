@@ -6,6 +6,7 @@ import { aiNoteChatResponse, aiNoteResponse } from "../utils/ai";
 import fs from "fs";
 import path from "path";
 import { Conversation } from "../models";
+import Question from "../models/question.model";
 
 const getUserNotesService = async (user_id: string): Promise<object> => {
   const notes = await Note.find({ user_id });
@@ -94,6 +95,7 @@ const deleteUserNoteService = async (
   }
 
   await Conversation.deleteMany({ note_id });
+  await Question.deleteMany({ note_id });
   await note.deleteOne();
 
   return { note_id };
