@@ -133,4 +133,54 @@ const docToText = async (
   }
 };
 
-export { generateOtp, generateJwt, verifyJwt, uploadToCloudinary, docToText };
+/**
+ * Grades user answers by comparing them with AI-generated answers.
+ * @param {Array<{ question: string, answer: string }>} aiAnswers - The correct answers provided by AI.
+ * @param {Array<{ question: string, answer: string }>} userAnswers - The answers submitted by the user.
+ * @returns {object} - An object containing the score, grade, number of correct answers, total questions, and calculation basis.
+ */
+const gradeUserAnswers = (aiAnswers: any[], userAnswers: any[]) => {
+  const calculateGrade = (percentage: number): "A" | "B" | "C" | "D" | "F" => {
+    if (percentage >= 90) return "A";
+    if (percentage >= 80) return "B";
+    if (percentage >= 70) return "C";
+    if (percentage >= 60) return "D";
+    return "F";
+  };
+
+  let correctAnswers = 0;
+
+  aiAnswers.forEach((aiAnswer, index) => {
+    const userAnswer = userAnswers[index];
+
+    if (
+      aiAnswer.question === userAnswer?.question &&
+      aiAnswer.answer.trim().toLowerCase() ===
+        userAnswer?.answer.trim().toLowerCase()
+    ) {
+      correctAnswers++;
+    }
+  });
+
+  const totalQuestions = aiAnswers.length;
+  const score = (correctAnswers / totalQuestions) * 100;
+
+  const grade = calculateGrade(score);
+
+  return {
+    score,
+    grade,
+    correct_answers: correctAnswers,
+    total_questions: totalQuestions,
+    calculation_basis: `${correctAnswers}/${totalQuestions}`,
+  };
+};
+
+export {
+  generateOtp,
+  generateJwt,
+  verifyJwt,
+  uploadToCloudinary,
+  docToText,
+  gradeUserAnswers,
+};

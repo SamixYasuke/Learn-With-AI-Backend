@@ -4,18 +4,17 @@ interface QuestionDetail {
   question_text: string;
   options?: string[];
   correct_answer?: string;
-  expected_answer?: string;
 }
 
 interface IQuestion extends Document {
   user_id: Types.ObjectId;
   note_id: Types.ObjectId;
-  question_type: "multiple_choice" | "true_false" | "long_answer";
+  question_type: "multiple_choice" | "true_false";
   number_of_questions: 5 | 10 | 20;
   difficulty: "easy" | "medium" | "hard";
   questions: QuestionDetail[];
   score?: number;
-  grade?: "A" | "B" | "C" | "D" | "E" | "F";
+  grade?: "A" | "B" | "C" | "D" | "F";
   is_graded: boolean;
   createdAt?: Date;
   updatedAt?: Date;
@@ -31,10 +30,6 @@ const QuestionDetailSchema = new Schema<QuestionDetail>({
     default: undefined,
   },
   correct_answer: {
-    type: String,
-    default: undefined,
-  },
-  expected_answer: {
     type: String,
     default: undefined,
   },
@@ -55,7 +50,7 @@ const QuestionSchema = new Schema<IQuestion>(
     question_type: {
       type: String,
       required: true,
-      enum: ["multiple_choice", "true_false", "long_answer"],
+      enum: ["multiple_choice", "true_false"],
     },
     number_of_questions: {
       type: Number,
@@ -76,7 +71,7 @@ const QuestionSchema = new Schema<IQuestion>(
     },
     grade: {
       type: String,
-      enum: ["A", "B", "C", "D", "E", "F"],
+      enum: ["A", "B", "C", "D", "F"],
     },
     is_graded: {
       type: Boolean,

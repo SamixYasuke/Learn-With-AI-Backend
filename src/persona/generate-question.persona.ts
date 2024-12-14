@@ -1,6 +1,6 @@
 const generateQuestionsPersona = (
   note_context: string,
-  question_type: "multiple_choice" | "true_false" | "long_answer",
+  question_type: "multiple_choice" | "true_false",
   number_of_questions: 5 | 10 | 20,
   difficulty: "easy" | "medium" | "hard"
 ) => {
@@ -27,9 +27,6 @@ const generateQuestionsPersona = (
    - **true_false**: Provide:
      - question_text: A true/false statement.
      - correct_answer: Either "true" or "false".
-   - **long_answer**: Provide:
-     - question_text: An open-ended question.
-     - expected_answer: A detailed answer to guide students.
 
 4. **JSON Output Format**:
    - Return an array where each question follows this structure:
@@ -58,12 +55,6 @@ const generateQuestionsPersona = (
    {
      "question_text": "The Earth revolves around the Sun.",
      "correct_answer": "true"
-   }
-
-3. **Long Answer** (Hard):
-   {
-     "question_text": "Explain the process of natural selection and its role in evolution.",
-     "expected_answer": "Natural selection is the process by which organisms better adapted to their environment tend to survive and produce more offspring. Over time, this leads to evolutionary changes in a population."
    }
 
 Your goal is to generate consistent, high-quality questions that are easy to parse programmatically and match the requested parameters."

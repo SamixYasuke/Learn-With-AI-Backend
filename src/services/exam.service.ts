@@ -1,12 +1,13 @@
 import Question from "../models/question.model";
 import { CustomError } from "../errors/CustomError";
 import { aiGenNoteQuestionResponse } from "../utils/ai";
+import { gradeUserAnswers } from "../utils/helper";
 import { Note } from "../models/note.model";
 
 const generateUserQuestionFromNoteService = async (
   user_id: string,
   note_id: string,
-  question_type: "multiple_choice" | "true_false" | "long_answer",
+  question_type: "multiple_choice" | "true_false",
   number_of_questions: 5 | 10 | 20,
   difficulty: "easy" | "medium" | "hard"
 ): Promise<object> => {
@@ -55,4 +56,49 @@ const generateUserQuestionFromNoteService = async (
   };
 };
 
-export { generateUserQuestionFromNoteService };
+const submitUserAnswersService = async (
+  user_id: string,
+  note_id: string,
+  answers: { question: string; answer: string }[]
+) => {
+  if (!Array.isArray(answers) || answers.length === 0) {
+    throw new CustomError("Answers Cannot be an empty array", 400);
+  }
+
+  const note = await Note.findOne({ _id: note_id, user_id });
+  if (!note) {
+    throw new CustomError("Note not found!", 404);
+  }
+
+  const question = await Question.findOne({ note_id, user_id });
+  if (!question) {
+    throw new CustomError("Question not found or doesn't belong to user!", 404);
+  }
+
+  if (question?.is_graded) {
+    throw new CustomError("Question Already Graded", 400);
+  }
+
+  const aiAnswers = question.questions.map((q) => ({
+    question: q.question_text,
+    answer: q.correct_answer,
+  }));
+
+  const gradingResults = gradeUserAnswers(aiAnswers, answers);
+  question.score = gradingResults.score;
+  question.grade = gradingResults.grade;
+  question.is_graded = true;
+  const updatedQuestion = await question.save();
+  const gradedResponse = {
+    number_of_questions: updatedQuestion?.number_of_questions,
+    grade: updatedQuestion?.grade,
+    score: updatedQuestion?.score,
+    calculation_basis: `${gradingResults?.correct_answers}/${gradingResults?.total_questions}`,
+  };
+
+  return {
+    grade_info: gradedResponse,
+  };
+};
+
+export { generateUserQuestionFromNoteService, submitUserAnswersService };

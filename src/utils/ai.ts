@@ -80,7 +80,7 @@ const aiNoteChatResponse = async (
 
 const aiGenNoteQuestionResponse = async (
   note_context: string,
-  question_type: "multiple_choice" | "true_false" | "long_answer",
+  question_type: "multiple_choice" | "true_false",
   number_of_questions: 5 | 10 | 20,
   difficulty: "easy" | "medium" | "hard"
 ) => {
