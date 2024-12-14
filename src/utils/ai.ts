@@ -4,6 +4,7 @@ import { zodResponseFormat } from "openai/helpers/zod";
 import dotenv from "dotenv";
 import { saveNotePersona } from "../persona/save-note.persona";
 import { chatWithNotePersona } from "../persona/chat-with-note.persona";
+import { generateQuestionsPersona } from "../persona/generate-question.persona";
 
 dotenv.config();
 const OpenAI_API_KEY = process.env.OPENAI_API_KEY;
@@ -21,9 +22,20 @@ const noteResponse = z.object({
   topics: z.array(topic),
 });
 
-const userQuestionResponse = z.object({
+const userConversationResponse = z.object({
   question: z.string(),
   answer: z.string(),
+});
+
+const userGenQuestionResponse = z.object({
+  question: z.string(),
+  options: z.array(z.string()).optional(),
+  correct_answer: z.string().optional(),
+  expected_answer: z.string().optional(),
+});
+
+const userGenQuestionsResponse = z.object({
+  questions: z.array(userGenQuestionResponse),
 });
 
 const aiNoteResponse = async (user_note: string) => {
@@ -56,11 +68,43 @@ const aiNoteChatResponse = async (
       },
       { role: "user", content: user_question },
     ],
-    response_format: zodResponseFormat(userQuestionResponse, "user_question"),
+    response_format: zodResponseFormat(
+      userConversationResponse,
+      "user_conversation"
+    ),
   });
 
   const response = completion.choices[0].message.parsed;
   return response;
 };
 
-export { aiNoteResponse, aiNoteChatResponse };
+const aiGenNoteQuestionResponse = async (
+  note_context: string,
+  question_type: "multiple_choice" | "true_false" | "long_answer",
+  number_of_questions: 5 | 10 | 20,
+  difficulty: "easy" | "medium" | "hard"
+) => {
+  const completion = await openai.beta.chat.completions.parse({
+    model: "gpt-4o-mini",
+    messages: [
+      {
+        role: "system",
+        content: generateQuestionsPersona(
+          note_context,
+          question_type,
+          number_of_questions,
+          difficulty
+        ),
+      },
+    ],
+    response_format: zodResponseFormat(
+      userGenQuestionsResponse,
+      "user_gen_question"
+    ),
+  });
+
+  const response = completion.choices[0].message.parsed;
+  return response;
+};
+
+export { aiNoteResponse, aiNoteChatResponse, aiGenNoteQuestionResponse };

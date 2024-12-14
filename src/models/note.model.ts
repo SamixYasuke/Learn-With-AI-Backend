@@ -8,6 +8,7 @@ export interface INote extends Document {
   summary: string;
   topics: object[];
   conversations: any;
+  question: any;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -40,6 +41,10 @@ const NoteSchema: Schema = new Schema<INote>(
         ref: "Conversation",
       },
     ],
+    question: {
+      type: Schema.Types.ObjectId,
+      ref: "Question",
+    },
   },
   {
     timestamps: true,
