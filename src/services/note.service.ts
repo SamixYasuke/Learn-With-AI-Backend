@@ -25,14 +25,14 @@ const getUserNoteByIdService = async (
   user_id: string,
   note_id: string
 ): Promise<object> => {
-  const note = await Note.findById(note_id);
+  const note = await Note.findById(note_id, { user_id });
 
   if (!note) {
     throw new CustomError("Note not found", 404);
   }
 
   if (note?.user_id.toString() !== user_id) {
-    throw new CustomError("This note doesn't belong to this user", 403);
+    throw new CustomError("Unauthorized access to this note", 403);
   }
 
   return note;
@@ -86,7 +86,11 @@ const deleteUserNoteService = async (
   const note = await Note.findOne({ _id: note_id, user_id });
 
   if (!note) {
-    throw new CustomError("Note not found or doesn't belong to this user", 404);
+    throw new CustomError("Note not found", 404);
+  }
+
+  if (note?.user_id.toString() !== user_id) {
+    throw new CustomError("Unauthorized access to this note", 403);
   }
 
   await Conversation.deleteMany({ note_id });
@@ -99,7 +103,7 @@ const askAIQuestionBasedOnNoteService = async (
   userId: string,
   userQuestion: string,
   noteId: string
-) => {
+): Promise<object> => {
   if (!userQuestion) {
     throw new CustomError(
       "No question provided. Please provide a valid question.",
@@ -151,7 +155,10 @@ const askAIQuestionBasedOnNoteService = async (
   return aiResponse;
 };
 
-const getQuestionsByNoteIdService = async (userId: string, noteId: string) => {
+const getConversationsByNoteIdService = async (
+  userId: string,
+  noteId: string
+): Promise<object> => {
   const note = await Note.findOne({ _id: noteId, user_id: userId }).populate(
     "conversations"
   );
@@ -163,7 +170,7 @@ const getQuestionsByNoteIdService = async (userId: string, noteId: string) => {
     );
   }
 
-  if (note.conversations.length === 0) {
+  if (note?.conversations?.length === 0) {
     return [];
   }
 
@@ -182,5 +189,5 @@ export {
   uploadUserNoteService,
   deleteUserNoteService,
   askAIQuestionBasedOnNoteService,
-  getQuestionsByNoteIdService,
+  getConversationsByNoteIdService,
 };

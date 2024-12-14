@@ -7,7 +7,7 @@ import {
   uploadUserNoteService,
   deleteUserNoteService,
   askAIQuestionBasedOnNoteService,
-  getQuestionsByNoteIdService,
+  getConversationsByNoteIdService,
 } from "../services/note.service";
 
 const getUserNotesController = asyncHandler(
@@ -79,11 +79,11 @@ const askAIQuestionBasedOnNoteController = asyncHandler(
   }
 );
 
-const getQuestionsByNoteIdController = asyncHandler(
+const getConversationsByNoteIdController = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
     const user_id = req?.user?.id;
     const { note_id } = req?.params;
-    const questions = await getQuestionsByNoteIdService(user_id, note_id);
+    const questions = await getConversationsByNoteIdService(user_id, note_id);
     res.status(200).json({
       message: "Question Fetched successfully!",
       data: questions,
@@ -97,5 +97,5 @@ export {
   uploadUserNoteController,
   deleteUserNoteController,
   askAIQuestionBasedOnNoteController,
-  getQuestionsByNoteIdController,
+  getConversationsByNoteIdController,
 };

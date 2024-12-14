@@ -7,7 +7,7 @@ import {
   uploadUserNoteController,
   deleteUserNoteController,
   askAIQuestionBasedOnNoteController,
-  getQuestionsByNoteIdController,
+  getConversationsByNoteIdController,
 } from "../controllers/note.controller";
 
 const router = Router();
@@ -25,7 +25,7 @@ router.post(
 router.get(
   "/note/:note_id/questions",
   authenticateJwt,
-  getQuestionsByNoteIdController
+  getConversationsByNoteIdController
 );
 
 router.post(
