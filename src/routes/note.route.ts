@@ -23,7 +23,7 @@ router.post(
 );
 
 router.get(
-  "/note/:note_id/questions",
+  "/note/:note_id/conversations",
   authenticateJwt,
   getConversationsByNoteIdController
 );

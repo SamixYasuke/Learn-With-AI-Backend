@@ -29,7 +29,7 @@ const getUserNoteByIdController = asyncHandler(
     const { note_id } = req?.params;
     const getUserNoteRes = await getUserNoteByIdService(user_id, note_id);
     res.status(200).json({
-      message: "Notes retrieved successfully!",
+      message: "Note retrieved successfully!",
       data: {
         note: getUserNoteRes,
       },

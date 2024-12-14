@@ -25,7 +25,7 @@ const getUserNoteByIdService = async (
   user_id: string,
   note_id: string
 ): Promise<object> => {
-  const note = await Note.findById(note_id, { user_id });
+  const note = await Note.findById(note_id);
 
   if (!note) {
     throw new CustomError("Note not found", 404);
