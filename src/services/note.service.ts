@@ -119,37 +119,40 @@ const askAIQuestionBasedOnNoteService = async (
     );
   }
 
-  const noteContext = note?.content;
-  const aiResponse = await aiNoteChatResponse(userQuestion, noteContext);
+  let conversation = await Conversation.findOne({ note_id: noteId });
 
-  if (!aiResponse || !aiResponse?.question || !aiResponse?.answer) {
+  console.log(note.content);
+  const aiResponse = await aiNoteChatResponse(userQuestion, note.content);
+
+  if (!aiResponse || !aiResponse?.answer) {
     throw new CustomError(
       "Failed to generate AI response. Please try again.",
       500
     );
   }
 
-  const userConversation = new Conversation({
-    sender: "user",
-    message: userQuestion,
-    note_id: noteId,
-  });
-
-  const aiConversation = new Conversation({
-    sender: "ai",
-    message: aiResponse.answer,
-    note_id: noteId,
-  });
-
-  const [savedUserConversation, savedAIConversation] = await Promise.all([
-    userConversation.save(),
-    aiConversation.save(),
-  ]);
+  if (conversation) {
+    conversation.conversations.push(
+      { sender: "user", message: userQuestion },
+      { sender: "ai", message: aiResponse.answer }
+    );
+    await conversation.save();
+  } else {
+    conversation = new Conversation({
+      note_id: noteId,
+      user_id: userId,
+      conversations: [
+        { sender: "user", message: userQuestion },
+        { sender: "ai", message: aiResponse.answer },
+      ],
+    });
+    note.conversation = conversation._id;
+    await note.save();
+    await conversation.save();
+  }
 
   await Note.findByIdAndUpdate(noteId, {
-    $push: {
-      conversations: [savedUserConversation._id, savedAIConversation._id],
-    },
+    $push: { conversations: conversation._id },
   });
 
   return aiResponse;
@@ -160,7 +163,7 @@ const getConversationsByNoteIdService = async (
   noteId: string
 ): Promise<object> => {
   const note = await Note.findOne({ _id: noteId, user_id: userId }).populate(
-    "conversations"
+    "conversation"
   );
 
   if (!note) {
@@ -170,17 +173,17 @@ const getConversationsByNoteIdService = async (
     );
   }
 
-  if (note?.conversations?.length === 0) {
-    return [];
-  }
+  const conversation_id = note?.conversation;
+  const conversation = await Conversation.findOne({
+    user_id: userId,
+    note_id: noteId,
+    _id: conversation_id,
+  });
 
-  const conversationsResponse = note.conversations.map((conversation: any) => ({
-    id: conversation?._id,
-    sender: conversation?.sender,
-    message: conversation?.message,
-  }));
-
-  return { note_id: noteId, conversations: conversationsResponse };
+  return {
+    note_id: noteId,
+    conversation,
+  };
 };
 
 export {

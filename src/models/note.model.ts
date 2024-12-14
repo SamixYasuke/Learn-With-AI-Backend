@@ -7,7 +7,7 @@ export interface INote extends Document {
   content: string;
   summary: string;
   topics: object[];
-  conversations: any;
+  conversation: any;
   question: any;
   createdAt: Date;
   updatedAt: Date;
@@ -35,12 +35,10 @@ const NoteSchema: Schema = new Schema<INote>(
       type: String,
     },
     topics: [Object],
-    conversations: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Conversation",
-      },
-    ],
+    conversation: {
+      type: Schema.Types.ObjectId,
+      ref: "Conversation",
+    },
     question: {
       type: Schema.Types.ObjectId,
       ref: "Question",

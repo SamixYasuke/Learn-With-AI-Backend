@@ -2,11 +2,28 @@ import mongoose, { Document, Schema, Types } from "mongoose";
 
 export interface IConversation extends Document {
   note_id: Types.ObjectId;
-  sender: "user" | "ai";
-  message: string;
+  user_id: Types.ObjectId;
+  conversations: Chat[];
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface Chat {
+  sender: "user" | "ai";
+  message: string;
+}
+
+const Chat = new mongoose.Schema({
+  sender: {
+    type: String,
+    enum: ["user", "ai"],
+    required: true,
+  },
+  message: {
+    type: String,
+    required: true,
+  },
+});
 
 export const ConversationSchema = new mongoose.Schema(
   {
@@ -15,15 +32,12 @@ export const ConversationSchema = new mongoose.Schema(
       required: true,
       ref: "Note",
     },
-    sender: {
-      type: String,
-      enum: ["user", "ai"],
+    user_id: {
+      type: Schema.Types.ObjectId,
       required: true,
+      ref: "User",
     },
-    message: {
-      type: String,
-      required: true,
-    },
+    conversations: [Chat],
   },
   { timestamps: true }
 );

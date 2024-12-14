@@ -23,7 +23,6 @@ const noteResponse = z.object({
 });
 
 const userConversationResponse = z.object({
-  question: z.string(),
   answer: z.string(),
 });
 
