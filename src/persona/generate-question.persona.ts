@@ -1,7 +1,7 @@
 const generateQuestionsPersona = (
   note_context: string,
   question_type: "multiple_choice" | "true_false",
-  number_of_questions: 5 | 10 | 20,
+  number_of_questions: 5 | 10,
   difficulty: "easy" | "medium" | "hard"
 ) => {
   return `

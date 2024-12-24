@@ -8,7 +8,7 @@ const generateUserQuestionFromNoteService = async (
   user_id: string,
   note_id: string,
   question_type: "multiple_choice" | "true_false",
-  number_of_questions: 5 | 10 | 20,
+  number_of_questions: 5 | 10,
   difficulty: "easy" | "medium" | "hard"
 ): Promise<object> => {
   const note = await Note.findOne({ _id: note_id, user_id });
@@ -21,14 +21,19 @@ const generateUserQuestionFromNoteService = async (
     throw new CustomError("Questions already generated for this note.", 400);
   }
 
+  if (number_of_questions !== 5 && number_of_questions !== 10) {
+    throw new CustomError(
+      "Validation Error: Number of questions must be 5 or 10",
+      400
+    );
+  }
+
   const aiResponse = await aiGenNoteQuestionResponse(
     note.content,
     question_type,
     number_of_questions,
     difficulty
   );
-
-  console.log("AI Response:", aiResponse);
 
   if (!aiResponse || aiResponse.questions.length === 0) {
     throw new CustomError(

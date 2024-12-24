@@ -10,7 +10,7 @@ interface IQuestion extends Document {
   user_id: Types.ObjectId;
   note_id: Types.ObjectId;
   question_type: "multiple_choice" | "true_false";
-  number_of_questions: 5 | 10 | 20;
+  number_of_questions: 5 | 10;
   difficulty: "easy" | "medium" | "hard";
   questions: QuestionDetail[];
   score?: number;
@@ -55,7 +55,7 @@ const QuestionSchema = new Schema<IQuestion>(
     number_of_questions: {
       type: Number,
       required: true,
-      enum: [5, 10, 20],
+      enum: [5, 10],
     },
     difficulty: {
       type: String,

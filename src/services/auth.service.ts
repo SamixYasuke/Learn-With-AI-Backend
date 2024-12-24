@@ -26,9 +26,7 @@ const registerUserWithEmailPasswordService = async (
     name: user?.name,
     token,
   };
-  return {
-    user: cleaned_user,
-  };
+  return cleaned_user;
 };
 
 const loginUserWithEmailPasswordService = async (

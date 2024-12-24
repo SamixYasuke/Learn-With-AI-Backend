@@ -43,7 +43,7 @@ const uploadUserNoteController = asyncHandler(
     const upload = await uploadUserNoteService(user_id, req);
     res.status(200).json({
       message: "File uploaded successfully!",
-      upload,
+      data: upload,
     });
   }
 );

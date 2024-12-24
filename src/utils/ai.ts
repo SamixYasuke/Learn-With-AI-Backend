@@ -13,12 +13,14 @@ const openai = new OpenAI({ apiKey: OpenAI_API_KEY });
 const topic = z.object({
   topic: z.string(),
 });
+
+const explanation = z.object({
+  explanation: z.string(),
+});
+
 const noteResponse = z.object({
   summary: z.string(),
-  explanation_one: z.string(),
-  explanation_two: z.string(),
-  explanation_three: z.string(),
-  explanation_four: z.string(),
+  explanations: z.array(explanation),
   topics: z.array(topic),
 });
 
@@ -80,7 +82,7 @@ const aiNoteChatResponse = async (
 const aiGenNoteQuestionResponse = async (
   note_context: string,
   question_type: "multiple_choice" | "true_false",
-  number_of_questions: 5 | 10 | 20,
+  number_of_questions: 5 | 10,
   difficulty: "easy" | "medium" | "hard"
 ) => {
   const completion = await openai.beta.chat.completions.parse({

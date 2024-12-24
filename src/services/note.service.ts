@@ -36,7 +36,9 @@ const getUserNoteByIdService = async (
     throw new CustomError("Unauthorized access to this note", 403);
   }
 
-  return note;
+  const { content, ...noteWithoutContent } = note.toObject();
+
+  return noteWithoutContent;
 };
 
 const uploadUserNoteService = async (
@@ -67,15 +69,18 @@ const uploadUserNoteService = async (
     fileType: req?.file?.mimetype,
     content: docToTextResponse,
     summary: aiNoteRes?.summary,
+    explanations: aiNoteRes?.explanations.map(
+      (explanation) => explanation?.explanation
+    ),
     topics: aiNoteRes?.topics.map((topic) => topic?.topic),
   });
   const saveNote = await newNote.save();
 
   return {
+    note_id: saveNote?._id,
     file: {
       original_name: req?.file?.originalname,
     },
-    note: saveNote,
     ai_note: aiNoteRes,
   };
 };
@@ -122,8 +127,6 @@ const askAIQuestionBasedOnNoteService = async (
   }
 
   let conversation = await Conversation.findOne({ note_id: noteId });
-
-  console.log(note.content);
   const aiResponse = await aiNoteChatResponse(userQuestion, note.content);
 
   if (!aiResponse || !aiResponse?.answer) {
@@ -182,9 +185,11 @@ const getConversationsByNoteIdService = async (
     _id: conversation_id,
   });
 
+  const { note_id, user_id, ...cleaned_conversation } = conversation.toObject();
+
   return {
     note_id: noteId,
-    conversation,
+    conversations: cleaned_conversation,
   };
 };
 
