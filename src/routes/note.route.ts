@@ -12,29 +12,29 @@ import {
 
 const router = Router();
 
-router.get("/note", authenticateJwt, getUserNotesController);
+router.get("/notes", authenticateJwt, getUserNotesController);
 
-router.get("/note/:note_id", authenticateJwt, getUserNoteByIdController);
+router.get("/notes/:note_id", authenticateJwt, getUserNoteByIdController);
 
 router.post(
-  "/note/:note_id/ask",
+  "/notes/:note_id/ask",
   authenticateJwt,
   askAIQuestionBasedOnNoteController
 );
 
 router.get(
-  "/note/:note_id/conversations",
+  "/notes/:note_id/conversations",
   authenticateJwt,
   getConversationsByNoteIdController
 );
 
 router.post(
-  "/note/upload",
+  "/notes/upload",
   authenticateJwt,
   upload.single("note"),
   uploadUserNoteController
 );
 
-router.delete("/note/:note_id", authenticateJwt, deleteUserNoteController);
+router.delete("/notes/:note_id", authenticateJwt, deleteUserNoteController);
 
 export default router;
