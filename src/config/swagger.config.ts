@@ -11,10 +11,10 @@ const swaggerJsonUrl = isDevelopment
 const swaggerDefinition = {
   openapi: "3.1.0",
   info: {
-    title: "Finance Management API Docs",
+    title: "Learn With AI Docs",
     version: "1.0.0",
     description:
-      "This API provides functionalities for managing financial resources, including expenses, goals, incomes, and categories, built with Express and documented with Swagger.",
+      "This API provides functionalities for uploading note, chatting with ai concerning the note, see the note summary and answering questions set by the AI based on the note, built with Express and documented with Swagger.",
   },
   servers: [
     {
