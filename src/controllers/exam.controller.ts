@@ -9,7 +9,7 @@ import { asyncHandler } from "../utils/asyncHandler";
 
 /**
  * @swagger
- * /notes/{note_id}/generate-questions:
+ * /api/v1/notes/{note_id}/generate-questions:
  *   post:
  *     summary: Generate questions from a user note
  *     tags:
@@ -147,7 +147,7 @@ const generateUserQuestionFromNoteController = asyncHandler(
 
 /**
  * @swagger
- * /notes/{note_id}/submit-answers:
+ * /api/v1/notes/{note_id}/submit-answers:
  *   post:
  *     summary: Submit user answers for grading
  *     tags:
@@ -264,7 +264,7 @@ const submitUserAnswersController = asyncHandler(
 
 /**
  * @swagger
- * /questions/{question_id}/graded:
+ * /api/v1/questions/{question_id}/graded:
  *   get:
  *     summary: Get a graded question by ID
  *     tags:
