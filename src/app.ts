@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import swaggerUi from "swagger-ui-express";
 import specs from "./config/swagger.config";
 import initializeDatabaseandServer from "./data-source";
@@ -13,5 +13,9 @@ app.use("/api/v1", noteRoute);
 app.use("/api/v1", examRoute);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 app.use(errorHandler);
+
+app.get("/", (req: Request, res: Response) => {
+  res.send("<h1>Hello, this is an API for Learn with AI 😊</h1>");
+});
 
 initializeDatabaseandServer(app);
