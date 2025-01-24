@@ -9,19 +9,15 @@ import { authenticateJwt } from "../middlewares/authenticateJwt.middleware";
 const router = Router();
 
 router.post(
-  "/exams/questions/generate-from-note/:note_id",
+  "/questions/generate-from-note/:note_id",
   authenticateJwt,
   generateUserQuestionFromNoteController
 );
 
-router.post(
-  "/exams/submit/:note_id",
-  authenticateJwt,
-  submitUserAnswersController
-);
+router.post("/submit/:note_id", authenticateJwt, submitUserAnswersController);
 
 router.get(
-  "/exams/graded/:question_id",
+  "/graded/:question_id",
   authenticateJwt,
   getGradedQuestionByIdController
 );

@@ -40,7 +40,7 @@ const swaggerDefinition = {
 
 const options = {
   swaggerDefinition,
-  apis: ["./src/routes/*.ts", "./src/controllers/*.ts"],
+  apis: ["./src/docs/*.ts"],
 };
 
 const specs = swaggerJsdoc(options);
