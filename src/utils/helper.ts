@@ -7,6 +7,9 @@ import mammoth from "mammoth";
 import textract from "textract";
 import fs from "fs/promises";
 import fsSync from "fs";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRATION = process.env.JWT_EXPIRATION;

@@ -8,7 +8,10 @@ import { generateQuestionsPersona } from "../persona/generate-question.persona";
 
 dotenv.config();
 const OpenAI_API_KEY = process.env.OPENAI_API_KEY;
-const openai = new OpenAI({ apiKey: OpenAI_API_KEY });
+const openai = new OpenAI({
+  apiKey: process.env.GEMINI_API_KEY,
+  baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
+});
 
 const topic = z.object({
   topic: z.string(),
@@ -41,7 +44,7 @@ const userGenQuestionsResponse = z.object({
 
 const aiNoteResponse = async (user_note: string) => {
   const completion = await openai.beta.chat.completions.parse({
-    model: "gpt-4o-mini",
+    model: "gemini-2.0-flash",
     messages: [
       {
         role: "system",
@@ -61,7 +64,7 @@ const aiNoteChatResponse = async (
   note_context: string
 ) => {
   const completion = await openai.beta.chat.completions.parse({
-    model: "gpt-4o-mini",
+    model: "gemini-2.0-flash",
     messages: [
       {
         role: "system",
@@ -86,7 +89,7 @@ const aiGenNoteQuestionResponse = async (
   difficulty: "easy" | "medium" | "hard"
 ) => {
   const completion = await openai.beta.chat.completions.parse({
-    model: "gpt-4o-mini",
+    model: "gemini-2.0-flash",
     messages: [
       {
         role: "system",
@@ -96,6 +99,10 @@ const aiGenNoteQuestionResponse = async (
           number_of_questions,
           difficulty
         ),
+      },
+      {
+        role: "user",
+        content: "Please generate the requested questions.",
       },
     ],
     response_format: zodResponseFormat(
