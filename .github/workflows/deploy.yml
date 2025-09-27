@@ -1,0 +1,23 @@
+name: Deploy Learn With AI Backend to Droplet
+
+on:
+  push:
+    branches: [main]  # or main if that’s your default branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to DigitalOcean Droplet
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DROPLET_HOST }}     # your Droplet's public IP or DNS
+          username: root                        # or the user you log in with
+          password: ${{ secrets.DROPLET_PASSWORD }}  # store your droplet password in GitHub secrets
+          port: 22
+          script: |
+            cd ../opt/Learn-With-AI-Backend             # path to your project on the droplet
+            git pull origin main              # or main
+            chmod +x deploy.sh
+            ./deploy.sh
