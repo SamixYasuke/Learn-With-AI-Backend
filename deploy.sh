@@ -1,4 +1,3 @@
-use this for deploy.sh>
 #!/usr/bin/env bash
 
 # A script to safely build, stop the old container, and run the new one.
