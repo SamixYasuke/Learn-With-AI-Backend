@@ -45,6 +45,7 @@ const uploadUserNoteService = async (
   user_id: string,
   req: AuthenticatedRequest
 ): Promise<object> => {
+  try{
   if (!req?.file) {
     throw new CustomError("No file provided for upload!", 400);
   }
@@ -83,6 +84,9 @@ const uploadUserNoteService = async (
     },
     ai_note: aiNoteRes,
   };
+  }catch(error: any){
+    console.log(`An unexpected error has occured: ${error.message}`)
+  }
 };
 
 const deleteUserNoteService = async (
