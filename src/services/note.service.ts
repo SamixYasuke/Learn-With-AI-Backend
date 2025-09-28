@@ -3,10 +3,12 @@ import { CustomError } from "../errors/CustomError";
 import { docToText } from "../utils/helper";
 import { AuthenticatedRequest } from "../middlewares/authenticateJwt.middleware";
 import { aiNoteChatResponse, aiNoteResponse } from "../utils/ai";
-import fs from "fs";
+import fs from "fs/promises";
 import path from "path";
 import { Conversation } from "../models";
 import Question from "../models/question.model";
+import { isValidObjectId } from "mongoose";
+import { uploadDir } from "../config/multer.config";
 
 const getUserNotesService = async (user_id: string): Promise<object> => {
   const notes = await Note.find({ user_id });
@@ -44,48 +46,82 @@ const getUserNoteByIdService = async (
 const uploadUserNoteService = async (
   user_id: string,
   req: AuthenticatedRequest
-): Promise<object> => {
-  try{
-  if (!req?.file) {
-    throw new CustomError("No file provided for upload!", 400);
-  }
+) => {
+  try {
+    // Validate user_id
+    if (!isValidObjectId(user_id)) {
+      throw new CustomError("Invalid user ID", 400);
+    }
 
-  const absoluteFilePath = path.resolve(
-    req.file.destination,
-    req.file.filename
-  );
+    // Check if file exists
+    if (!req?.file) {
+      throw new CustomError("No file provided for upload!", 400);
+    }
 
-  if (!fs.existsSync(absoluteFilePath)) {
-    throw new CustomError(`File not found at path: ${absoluteFilePath}`, 404);
-  }
+    // Use uploadDir for consistency
+    const absoluteFilePath = path.join(uploadDir, req.file.filename);
 
-  const docToTextResponse = await docToText(
-    absoluteFilePath,
-    req.file.mimetype
-  );
-  const aiNoteRes = await aiNoteResponse(docToTextResponse);
-  const newNote = new Note({
-    user_id: user_id,
-    title: req?.file?.originalname,
-    fileType: req?.file?.mimetype,
-    content: docToTextResponse,
-    summary: aiNoteRes?.summary,
-    explanations: aiNoteRes?.explanations.map(
-      (explanation) => explanation?.explanation
-    ),
-    topics: aiNoteRes?.topics.map((topic) => topic?.topic),
-  });
-  const saveNote = await newNote.save();
+    // Verify file is readable
+    await fs.access(absoluteFilePath, fs.constants.R_OK);
 
-  return {
-    note_id: saveNote?._id,
-    file: {
-      original_name: req?.file?.originalname,
-    },
-    ai_note: aiNoteRes,
-  };
-  }catch(error: any){
-    console.log(`An unexpected error has occured: ${error.message}`)
+    // Validate MIME type
+    const allowedMimeTypes = [
+      "application/pdf",
+      "text/plain",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ];
+    if (!allowedMimeTypes.includes(req.file.mimetype)) {
+      await fs.unlink(absoluteFilePath); // Clean up
+      throw new CustomError("Invalid file type", 400);
+    }
+
+    // Process file
+    const docToTextResponse = await docToText(
+      absoluteFilePath,
+      req.file.mimetype
+    );
+    const aiNoteRes = await aiNoteResponse(docToTextResponse);
+
+    // Validate AI response
+    if (!aiNoteRes?.summary || !aiNoteRes?.explanations || !aiNoteRes?.topics) {
+      await fs.unlink(absoluteFilePath); // Clean up
+      throw new CustomError("Invalid AI response structure", 500);
+    }
+
+    // Save note to database
+    const newNote = new Note({
+      user_id,
+      title: req.file.originalname.replace(/[^a-zA-Z0-9.\-_]/g, ""), // Sanitize title
+      fileType: req.file.mimetype,
+      content: docToTextResponse,
+      summary: aiNoteRes.summary,
+      explanations: aiNoteRes.explanations.map((exp) => exp.explanation),
+      topics: aiNoteRes.topics.map((topic) => topic.topic),
+    });
+
+    const saveNote = await newNote.save();
+
+    return {
+      note_id: saveNote._id.toString(),
+      file: {
+        original_name: req.file.originalname,
+      },
+      ai_note: aiNoteRes,
+    };
+  } catch (error: any) {
+    // Clean up file on error
+    const absoluteFilePath = req?.file
+      ? path.join(uploadDir, req.file.filename)
+      : null;
+    if (
+      absoluteFilePath &&
+      (await fs.access(absoluteFilePath).catch(() => false))
+    ) {
+      await fs.unlink(absoluteFilePath);
+    }
+    console.error(`Error in uploadUserNoteService: ${error.message}`);
+    throw error; // Rethrow for caller
   }
 };
 

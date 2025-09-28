@@ -3,11 +3,12 @@ import path from "path";
 import fs from "fs";
 import { CustomError } from "../errors/CustomError";
 
+export const uploadDir = path.join(__dirname, "../../", "uploads");
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const uploadDir = "uploads/";
-    // Create uploads folder if it doesn't exist
     if (!fs.existsSync(uploadDir)) {
+      console.log(`Creating directory: ${uploadDir}`);
       fs.mkdirSync(uploadDir, { recursive: true });
     }
     cb(null, uploadDir);
@@ -20,14 +21,17 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-  const filetypes = /.pdf|.txt|.doc/;
+  const filetypes = /\.pdf|\.txt|\.doc/;
   const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
   if (extname) {
-    return cb(null, true);
+    cb(null, true);
   } else {
-    cb(
-      new CustomError("Error: Only .pdf, .txt, or .doc files are allowed!", 400)
+    const error = new CustomError(
+      "Error: Only .pdf, .txt, or .doc files are allowed!",
+      400
     );
+    console.error(error.message, file.originalname);
+    cb(error);
   }
 };
 
